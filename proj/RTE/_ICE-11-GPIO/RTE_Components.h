@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'proj' 
- * Target:  'final-proj' 
+ * Project: 'HW2' 
+ * Target:  'ICE-11-GPIO' 
  */
 
 #ifndef RTE_COMPONENTS_H
