@@ -33,8 +33,7 @@
 #include "lcd.h"
 #include "lcd_images.h"
 #include "hw2_images.h"
-
-extern void initialize_serial_debug(void);
-extern void put_string(char *data);
+#include "eeprom.h"
+#include "serial_debug.h"
 
 #endif
