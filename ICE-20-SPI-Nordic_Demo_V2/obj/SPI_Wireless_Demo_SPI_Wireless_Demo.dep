@@ -1,0 +1,35 @@
+Dependencies for Project 'SPI_Wireless_Demo', Target 'SPI_Wireless_Demo': (DO NOT MODIFY !)
+F (.\main.c)(0x5A25907E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\drivers\include -I ..\peripherals\include --debug-IC:\Users\jkrachey\Downloads\student_F17_Solutions\student_F17_Solutions\ICE-20-SPI-Nordic_Demo_V2\RTE\_SPI_Wireless_Demo-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="522" -D_RTE_ -DTM4C123GH6PM-o .\obj\main.o --depend .\obj\main.d)
+I (main.h)(0x57BF266A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F6CB98)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x57F6CB98)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F6CB98)
+I (C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123.h)(0x530F6376)
+I (C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123GH6PM.h)(0x551052AC)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\core_cm4.h)(0x5825FEBE)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\cmsis_compiler.h)(0x5825FEBE)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\cmsis_armcc.h)(0x5825FEBE)
+I (C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\system_TM4C123.h)(0x51B75486)
+I (..\peripherals\include\wireless.h)(0x57BDACAE)
+I (..\drivers\include\gpio_port.h)(0x5751D950)
+I (..\drivers\include\driver_defines.h)(0x57518EA4)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x57F6CB98)
+I (C:\Keil_v5\ARM\ARMCC\include\errno.h)(0x57F6CB96)
+I (..\drivers\include\spi.h)(0x559EBC3C)
+I (interrupts.h)(0x57BF26F0)
+I (..\drivers\include\pc_buffer.h)(0x57EECD96)
+I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x57F6CB98)
+I (..\drivers\include\uart.h)(0x57BF13C8)
+I (..\peripherals\include\validate.h)(0x58224878)
+I (..\peripherals\include\spi_select.h)(0x57641756)
+I (..\peripherals\include\serial_debug.h)(0x57BF20A2)
+F (.\lib\ece353_wirless_demo.lib)(0x5A25904E)()
+F (RTE\Device\TM4C123GH6PM\startup_TM4C123.s)(0x57BDAB5C)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" --apcs=interwork --pd "__MICROLIB SETA 1" --debug-IC:\Users\jkrachey\Downloads\student_F17_Solutions\student_F17_Solutions\ICE-20-SPI-Nordic_Demo_V2\RTE\_SPI_Wireless_Demo-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123--pd "__UVISION_VERSION SETA 522" --pd "_RTE_ SETA 1" --pd "TM4C123GH6PM SETA 1"--list .\lst\startup_tm4c123.lst --xref -o .\obj\startup_tm4c123.o --depend .\obj\startup_tm4c123.d)
+F (RTE\Device\TM4C123GH6PM\system_TM4C123.c)(0x57BDAB5C)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\drivers\include -I ..\peripherals\include --debug-IC:\Users\jkrachey\Downloads\student_F17_Solutions\student_F17_Solutions\ICE-20-SPI-Nordic_Demo_V2\RTE\_SPI_Wireless_Demo-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="522" -D_RTE_ -DTM4C123GH6PM-o .\obj\system_tm4c123.o --depend .\obj\system_tm4c123.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x57F6CB98)
+I (C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123.h)(0x530F6376)
+I (C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123GH6PM.h)(0x551052AC)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\core_cm4.h)(0x5825FEBE)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\cmsis_compiler.h)(0x5825FEBE)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\cmsis_armcc.h)(0x5825FEBE)
+I (C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\system_TM4C123.h)(0x51B75486)

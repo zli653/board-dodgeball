@@ -32,7 +32,7 @@ static __INLINE uint8_t accel_reg_read(uint8_t reg)
   // ADD CODE
 	uint8_t tx_data[2];
 	uint8_t rx_data[2];
-	tx_data[0] = reg;
+	tx_data[0] = reg | ACCEL_SPI_READ;
 	accel_CSN_low();
   spiTx(ACCEL_SPI_BASE, tx_data, 2, rx_data);
 	accel_CSN_high();

@@ -1,0 +1,11 @@
+--create .\obj\ece353_wirless_demo.lib
+.\obj\main.o
+.\obj\interrupts.o
+.\obj\gpio_port.o
+.\obj\pc_buffer.o
+.\obj\spi.o
+.\obj\uart.o
+..\lib\ECE353-Validate.lib
+.\obj\serial_debug.o
+.\obj\spi_select.o
+.\obj\wireless.o

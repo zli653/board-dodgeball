@@ -1,6 +1,6 @@
 Dependencies for Project 'proj', Target 'proj': (DO NOT MODIFY !)
-F (.\main.c)(0x5CBCD920)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\include -I ..\drivers\include -I ..\peripherals\include --debug-I.\RTE\_proj-IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IE:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="526" -D_RTE_ -DTM4C123GH6PM-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
-I (main.h)(0x5CBCD91B)
+F (.\main.c)(0x5CBCDD55)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\include -I ..\drivers\include -I ..\peripherals\include --debug-I.\RTE\_proj-IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IE:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="526" -D_RTE_ -DTM4C123GH6PM-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
+I (main.h)(0x5CBCD94F)
 I (E:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599FA01C)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599FA01E)
 I (E:\Keil_v5\ARM\ARMCC\include\string.h)(0x599FA01C)
@@ -25,6 +25,7 @@ I (..\drivers\include\i2c.h)(0x5BC74758)
 I (..\peripherals\include\serial_debug.h)(0x5BC7475E)
 I (..\drivers\include\pc_buffer.h)(0x5C7D329E)
 I (..\drivers\include\uart.h)(0x5BC74758)
+F (.\main.h)(0x5CBCD94F)()
 F (..\drivers\c\gpio_port.c)(0x5CADE9BC)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\include -I ..\drivers\include -I ..\peripherals\include --debug-I.\RTE\_proj-IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IE:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="526" -D_RTE_ -DTM4C123GH6PM-o .\obj\gpio_port.o --omf_browse .\obj\gpio_port.crf --depend .\obj\gpio_port.d)
 I (..\drivers\include\driver_defines.h)(0x5BC74758)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599FA01E)

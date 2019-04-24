@@ -1,0 +1,17 @@
+.\obj\interrupts.o: interrupts.c
+.\obj\interrupts.o: interrupts.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123GH6PM.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\core_cm4.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\cmsis_compiler.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include\cmsis_armcc.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\system_TM4C123.h
+.\obj\interrupts.o: ..\drivers\include\driver_defines.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\errno.h
+.\obj\interrupts.o: ..\drivers\include\pc_buffer.h
+.\obj\interrupts.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\obj\interrupts.o: ..\drivers\include\uart.h
+.\obj\interrupts.o: ..\peripherals\include\validate.h
