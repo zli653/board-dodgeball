@@ -380,3 +380,4 @@ i2c_status_t i2cGetByte(
     return I2C_OK;
   }
 }
+

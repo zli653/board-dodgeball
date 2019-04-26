@@ -39,6 +39,28 @@ void EnableInterrupts(void)
 	}
 }
 
+bool init_i2c() {
+	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
+	// Configure SCL 
+  if(gpio_config_digital_enable(GPIOA_BASE, PA6)== false)  return false;
+	if(gpio_config_digital_enable(GPIOA_BASE, PA7)== false)  return false;
+
+    
+  if(gpio_config_alternate_function(GPIOA_BASE, PA6)== false)  return false;
+	if(gpio_config_alternate_function(GPIOA_BASE, PA7)== false)  return false;
+  
+	
+	if(gpio_config_open_drain(GPIOA_BASE, PA7)== false)  return false;
+	
+  if(gpio_config_port_control(GPIOA_BASE, GPIO_PCTL_PA6_M, GPIO_PCTL_PA6_I2C1SCL)== false)  return false;
+	if(gpio_config_port_control(GPIOA_BASE, GPIO_PCTL_PA7_M, GPIO_PCTL_PA7_I2C1SDA)== false)   return false;
+
+	
+	if(initializeI2CMaster(I2C1_BASE)!= I2C_OK)  return false;
+	
+	return true;
+}
+
 //*****************************************************************************
 //*****************************************************************************
 bool init_hardware(void)
@@ -48,24 +70,7 @@ bool init_hardware(void)
 	init_serial_debug(true, true);
 	eeprom_init();
 
-	// i2c initialzation
-	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
-	// Configure SCL 
-	if(gpio_config_digital_enable(GPIOA_BASE, PA6)== false)  return false;
-	if(gpio_config_digital_enable(GPIOA_BASE, PA7)== false)  return false;
-
-
-	if(gpio_config_alternate_function(GPIOA_BASE, PA6)== false)  return false;
-	if(gpio_config_alternate_function(GPIOA_BASE, PA7)== false)  return false;
-
-	
-	if(gpio_config_open_drain(GPIOA_BASE, PA7)== false)  return false;
-	
-	if(gpio_config_port_control(GPIOA_BASE, GPIO_PCTL_PA6_M, GPIO_PCTL_PA6_I2C1SCL)== false)  return false;
-	if(gpio_config_port_control(GPIOA_BASE, GPIO_PCTL_PA7_M, GPIO_PCTL_PA7_I2C1SDA)== false)   return false;
-
-	if(initializeI2CMaster(I2C1_BASE)!= I2C_OK)  return false;
-
+	if(!init_i2c()) return false;
 
 	init_serial_debug(true, true);
 	lcd_config_gpio();

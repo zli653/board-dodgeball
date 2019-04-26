@@ -75,7 +75,7 @@ int serial_debug_rx(PC_Buffer *rx_buffer, bool block)
    // buffer.  See main.c to determine how to enable/disable interrupts.
 	 DisableInterrupts();
 
-	 pc_buffer_remove(rx_buffer, ((char *) (&c)));
+	 pc_buffer_remove(rx_buffer, (char *) &c);
 	 
 	 EnableInterrupts();
 

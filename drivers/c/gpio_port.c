@@ -339,8 +339,8 @@ bool  gpio_config_enable_pulldown(uint32_t baseAddr, uint8_t pins)
 	  return false;
     
   gpioPort = (GPIOA_Type *)baseAddr;
-  gpioPort->PUR &= ~pins;
-	//gpioPort->PDE = pins;
+  // gpioPort->PUR &= ~pins;
+  gpioPort->PDR |= pins;
   
   return true;
 }
@@ -444,11 +444,26 @@ bool  gpio_config_open_drain(uint32_t gpioBase, uint8_t pins)
 //*****************************************************************************
 bool  gpio_config_falling_edge_irq(uint32_t gpioBase, uint8_t pins)
 {
-  GPIOA_Type  *gpioPort;
-
-  // ADD CODE
+	IRQn_Type	interrupt_IRQ;
+	
+	if (!verify_base_addr(gpioBase)) return false;
+	GPIOA_Type *gpioPort = (GPIOA_Type *)gpioBase;
   // Verify that the base address is a valid GPIO base address
   // using the verify_base_addr function provided above
-    
-  return true;
+  
+  interrupt_IRQ = gpio_get_irq_num(gpioBase);
+  
+  
+  gpioPort->IS &= (~pins);
+  gpioPort->ICR |= pins;
+  gpioPort->IBE &= (~pins);
+  gpioPort->IEV &= (~pins);
+  gpioPort->IM |= pins;
+  
+  // Set the Priority
+  NVIC_SetPriority(interrupt_IRQ, 1);
+
+  // Enable the Interrupt in the NVIC
+  NVIC_EnableIRQ(interrupt_IRQ);
+	return true;
 }

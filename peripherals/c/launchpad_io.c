@@ -69,7 +69,7 @@ static __inline void  port_f_enable_port(void)
 	SYSCTL->RCGCGPIO |= SYSCTL_RCGCGPIO_R5;
 	
 	// wait until port F is ready
-	while( ! (SYSCTL->PRGPIO & SYSCTL_RCGCGPIO_R5)){}
+	while( ! (SYSCTL->PRGPIO & SYSCTL_PRGPIO_R5)){}
 	
 	// clear the lock register
 	GPIOF->LOCK = 0x4C4F434B;
@@ -177,7 +177,7 @@ void  lp_io_set_pin(uint8_t pin_number)
 //*****************************************************************************
 void  lp_io_clear_pin(uint8_t pin_number)
 {
-	GPIOF->DATA |= (0 << pin_number);
+	GPIOF->DATA &= (~(1<<pin_number));
 }
 
 //*****************************************************************************
