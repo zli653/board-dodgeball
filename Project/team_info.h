@@ -19,21 +19,17 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#ifndef __MAIN_H__
-#define __MAIN_H__
+#ifndef __TEAM_INFO_H__
+#define __TEAM_INFO_H__
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 
+#define ADDR_START 	 256
+// 80 characters for each field
+#define NUM_BYTES	 20
+#define NUM_FIELD    3
 
-#include "TM4C123.h"
-#include "gpio_port.h"
-#include "lcd.h"
-#include "lcd_images.h"
-#include "eeprom.h"
-#include "serial_debug.h"
-#include "io_expander.h"
-// #include "team_info.h"
 #endif
