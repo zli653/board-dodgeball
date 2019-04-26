@@ -304,12 +304,15 @@ bool uart_init(uint32_t uart_base, bool enable_rx_irq, bool enable_tx_irq)
 		if( enable_rx_irq)
 		{
 			// <ADD CODE> Turn on the UART Interrupts for Rx, and Rx Timeout
-			 uart->IM |= (UART_IM_RXIM | UART_IM_RTIM);
+		      //TODO: configure interrupt levels?
+			uart->IFLS = UART_IFLS_RX7_8;	 
+		    uart->IM |= (UART_IM_RXIM | UART_IM_RTIM);
 		}
 
 		if( enable_tx_irq)
 		{
 			// ADD Code to enable TX Empty IRQs
+		      uart->IFLS = UART_IFLS_TX1_8;
 			uart->IM |= UART_IM_TXIM;
 		}
 
@@ -326,7 +329,7 @@ bool uart_init(uint32_t uart_base, bool enable_rx_irq, bool enable_tx_irq)
 		}
 
 		// re-enable the UART so that it transmits and receives data
-    uart->CTL = UART_CTL_UARTEN | UART_CTL_RXE | UART_CTL_TXE;
+    uart->CTL |= UART_CTL_UARTEN | UART_CTL_RXE | UART_CTL_TXE;
 
     return true;
 

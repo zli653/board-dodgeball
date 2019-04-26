@@ -11,7 +11,6 @@
 #include "TM4C123GH6PM.h"
 #include "driver_defines.h"
 
-
 typedef enum {
   I2C_OK, 
   I2C_NULL_PTR, 

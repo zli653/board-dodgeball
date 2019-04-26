@@ -31,11 +31,10 @@
 //*****************************************************************************
 void pc_buffer_init(PC_Buffer *buffer, uint16_t buffer_size)
 {
-	// buffer = malloc(3*sizeof(uint32_t) + sizeof(uint16_t));
-	buffer->consume_count = 0;
-	buffer->produce_count = 0;
 	buffer->array = malloc(buffer_size);
 	buffer->BUFFER_SIZE = buffer_size;
+	buffer->consume_count = 0;
+	buffer->produce_count = 0;
 }
 
 //*****************************************************************************

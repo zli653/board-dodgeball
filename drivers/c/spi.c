@@ -92,7 +92,7 @@ bool initialize_spi( uint32_t base_addr, uint8_t spi_mode, uint32_t cpsr)
     // FSSIClk = FSysClk / (CPSDVSR * (1 + SCR))
     // Use the cpsr parameter passed into the function to set the CPSDVSR bits.  
     // Set the SCR CR0 to 0.
-		mySSI->CPSR = cpsr;
+		mySSI->CPSR |= (cpsr & SSI_CPSR_CPSDVSR_M);
 		mySSI->CR0  &=  ~SSI_CR0_SCR_M;
 		
     // ************* ADD CODE *********************** //
