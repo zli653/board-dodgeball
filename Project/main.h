@@ -36,4 +36,12 @@
 #include "serial_debug.h"
 #include "io_expander.h"
 // #include "team_info.h"
+
+
+#define ADDR_START 	 256
+// 80 characters for each field
+#define NUM_BYTES	 80
+// unsed: info for further usage
+#define NUM_FIELD    3
+
 #endif
