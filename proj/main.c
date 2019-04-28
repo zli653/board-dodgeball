@@ -29,10 +29,7 @@
 void init_hardware(void)
 {
 	// TODO: initial all hardware here
-  init_serial_debug(true, true);
-  lcd_config_gpio();
-  lcd_config_screen();
-  lcd_clear_screen(LCD_COLOR_BLACK);   
+  init_serial_debug(true, true);  
 }
 	
 //*****************************************************************************
@@ -40,36 +37,6 @@ void init_hardware(void)
 int 
 main(void)
 {
-	// reset
-	// eeprom print name
-	// SW2 write name
-	
-	// wireless connect
-		// set up master
-		// draw map
-		// print string on top edge
-	  // wait for user press up bottom
-	
-		// slave
-	  // draw different map
-		// print string on top edge
-	
-	// while start
-	// running game
-	// master
-	  // update sunlight sum
-	  // get bottom press to change item selection
-	  // get touch screen to update item location
-	  // transmit sunlight negative change to master
-		// update zoombie info (hp, pos, isalive)
-		// draw bullet
-		// update plant (ho, pos) (and then draw)
-		// transmit zoombie dead pos
-		
-	// slave
-	  // random generate sunlight pos
-		// get zoombie dead pos
-		// update sunlight pos based on accelerometer (reach leftmost edge disapper)
-		// collect sunlight at bottom edge
-		// tranmit sunlight positive change to master
+	init_hardware();
+	wireless_initialize();
 }

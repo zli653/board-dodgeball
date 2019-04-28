@@ -35,5 +35,7 @@
 #include "hw2_images.h"
 #include "eeprom.h"
 #include "serial_debug.h"
+#include "wireless.h"
+
 
 #endif
