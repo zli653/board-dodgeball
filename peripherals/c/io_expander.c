@@ -6,44 +6,7 @@
 
 
 bool io_expander_init(void){
-	if(gpio_enable_port(IO_EXPANDER_GPIO_BASE) == false)
-  {
-    return false;
-  }
-	// Configure SCL 
-  if(gpio_config_digital_enable(IO_EXPANDER_GPIO_BASE, IO_EXPANDER_I2C_SCL_PIN)== false)
-  {
-    return false;
-  }
-	
-	if(gpio_config_digital_enable(IO_EXPANDER_GPIO_BASE, IO_EXPANDER_I2C_SDA_PIN)== false)
-  {
-    return false;
-  }
-    
-  if(gpio_config_alternate_function(IO_EXPANDER_GPIO_BASE, IO_EXPANDER_I2C_SCL_PIN)== false)
-  {
-    return false;
-  }
-	if(gpio_config_alternate_function(IO_EXPANDER_GPIO_BASE, IO_EXPANDER_I2C_SDA_PIN)== false)
-  {
-    return false;
-  }
-    
-	
-  if(gpio_config_port_control(IO_EXPANDER_GPIO_BASE, IO_EXPANDER_I2C_SCL_PCTL_M, IO_EXPANDER_I2C_SCL_PIN_PCTL)== false)
-  {
-    return false;
-  }
-	if(gpio_config_port_control(IO_EXPANDER_GPIO_BASE,IO_EXPANDER_I2C_SDA_PCTL_M, IO_EXPANDER_I2C_SDA_PIN_PCTL)== false)
-  {
-    return false;
-  }
-	
-	if( initializeI2CMaster(IO_EXPANDER_I2C_BASE)!= I2C_OK)
-  {
-    return false;
-  }
+
 	
 	// the part above should be written to one file
 	//TODO: gpio B
@@ -66,6 +29,13 @@ bool io_expander_init(void){
 	// io_expander_write_reg(MCP23017_DEFVALB_R,0xff);
 	io_expander_write_reg(MCP23017_INTCONB_R,0x00);
 
+
+	gpio_config_digital_enable(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
+	gpio_config_enable_input(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
+	gpio_config_enable_pullup(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
+	
+	gpio_config_falling_edge_irq(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
+	
 	return true;
 }
 
@@ -116,21 +86,10 @@ void light_control(uint8_t bitmap){
 	io_expander_write_reg(MCP23017_GPIOA_R,bitmap);
 }
 
-uint8_t read_button(){
-	uint8_t status = io_expander_read_reg(MCP23017_INTCAPB_R);
-	if ((status & (1<<DIR_BTN_UP_PIN)) != 0){
-		return 0;
-	}
-	if ((status & (1<<DIR_BTN_DOWN_PIN)) != 0){
-		return 1;
-	}
-	if ((status & (1<<DIR_BTN_LEFT_PIN)) != 0){
-		return 2;
-	}
-	if ((status & (1<<DIR_BTN_RIGHT_PIN)) != 0){
-		return 3;
-	}
+uint8_t read_button(void){
+	uint8_t status;
 	
+	status	= io_expander_read_reg(MCP23017_INTCAPB_R);	
 	return status;
 }
 

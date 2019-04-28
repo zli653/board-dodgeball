@@ -232,28 +232,28 @@ void lcd_draw_image(
 void lcd_config_gpio(void)
 {
   // Configure Chip Select
-  gpio_enable_port(LCD_CSX_GPIO_BASE);
+  // gpio_enable_port(LCD_CSX_GPIO_BASE);
   gpio_config_digital_enable( LCD_CSX_GPIO_BASE, LCD_CSX_PIN);
   gpio_config_enable_output( LCD_CSX_GPIO_BASE, LCD_CSX_PIN);
   gpio_config_enable_pullup( LCD_CSX_GPIO_BASE, LCD_CSX_PIN);
   LCD_CSX =  LINE_HIGH;
   
   // Configure Data/Instruction Select
-  gpio_enable_port(LCD_DCX_INSTR_GPIO_BASE);
+  // gpio_enable_port(LCD_DCX_INSTR_GPIO_BASE);
   gpio_config_digital_enable( LCD_DCX_INSTR_GPIO_BASE, LCD_DCX_INSTR_PIN);
   gpio_config_enable_output( LCD_DCX_INSTR_GPIO_BASE, LCD_DCX_INSTR_PIN);
   gpio_config_enable_pullup( LCD_DCX_INSTR_GPIO_BASE, LCD_DCX_INSTR_PIN);
   LCD_DCX = LCD_DCX_DATA_PACKET;
   
   // Configure Write Signal
-  gpio_enable_port(LCD_WRX_GPIO_BASE);
+  // gpio_enable_port(LCD_WRX_GPIO_BASE);
   gpio_config_digital_enable( LCD_WRX_GPIO_BASE, LCD_WRX_PIN);
   gpio_config_enable_output( LCD_WRX_GPIO_BASE, LCD_WRX_PIN);
   gpio_config_enable_pullup( LCD_WRX_GPIO_BASE, LCD_WRX_PIN);
  LCD_WRX = LINE_HIGH;
   
   // Configure the Data pins
-  gpio_enable_port(LCD_DATA_GPIO_BASE);
+  // gpio_enable_port(LCD_DATA_GPIO_BASE);
   gpio_config_digital_enable( LCD_DATA_GPIO_BASE, LCD_DATA_PINS);
   gpio_config_enable_output( LCD_DATA_GPIO_BASE, LCD_DATA_PINS);
   gpio_config_enable_pullup( LCD_DATA_GPIO_BASE, LCD_DATA_PINS);

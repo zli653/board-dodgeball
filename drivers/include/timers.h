@@ -34,5 +34,8 @@ bool gp_timer_config_32(uint32_t base_addr, uint32_t mode, bool count_up, bool e
 //*****************************************************************************
 bool gp_timer_wait(uint32_t base_addr, uint32_t ticks);
 
+IRQn_Type timer_get_irq_num(uint32_t base);
+
+bool gp_timer_enable(uint32_t base_addr, uint32_t ticks);
 
 #endif

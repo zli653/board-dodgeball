@@ -21,6 +21,20 @@
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "main.h"
+#define SEC_ONE     50000000
+volatile bool ALERT_TIMER1_LED_UPDATE;
+
+volatile int Button_interrupted;
+volatile int Button_value;
+volatile int Button_value_old;
+
+bool up_button;
+bool right_button;
+bool left_button;
+bool down_button;
+bool sw2_button;
+int button_flag;
+
 
 //*****************************************************************************
 //*****************************************************************************
@@ -39,8 +53,27 @@ void EnableInterrupts(void)
 	}
 }
 
-bool init_i2c() {
+void TIMER1A_Handler(void)
+{
+	TIMER0_Type *gp_timer = (TIMER0_Type *)TIMER1_BASE;
+	// acknowledges (clears) a Timer A timeout
+	gp_timer->ICR |= TIMER_ICR_TATOCINT;
+	
+	ALERT_TIMER1_LED_UPDATE = true;
+}
+
+bool init_gpio(){
 	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
+	if(gpio_enable_port(GPIOB_BASE) == false)   return false;
+	if(gpio_enable_port(GPIOC_BASE) == false)   return false;
+	if(gpio_enable_port(GPIOD_BASE) == false)   return false;
+	if(gpio_enable_port(GPIOE_BASE) == false)   return false;
+	if(gpio_enable_port(GPIOF_BASE) == false)   return false;
+	return true;
+}
+
+bool init_i2c() {
+
 	// Configure SCL 
   if(gpio_config_digital_enable(GPIOA_BASE, PA6)== false)  return false;
 	if(gpio_config_digital_enable(GPIOA_BASE, PA7)== false)  return false;
@@ -68,18 +101,40 @@ bool init_hardware(void)
 	// TODO: initial all hardware here
 	DisableInterrupts();
 	init_serial_debug(true, true);
-	eeprom_init();
-
+	init_gpio();
+	// eeprom_init();
 	if(!init_i2c()) return false;
 
-	init_serial_debug(true, true);
-	lcd_config_gpio();
+	// lcd_config_gpio();
 	lcd_config_screen();
 	lcd_clear_screen(LCD_COLOR_BLACK);  
-	// TODO: check IO expander open gpio port A 
-	// TODO: check overlapping open gpio port
+	io_expander_init();
 	
 	
+  // inside initalize hardware
+  // Initialize the TIMER1 to be a 
+  //      32-bit
+  //      Periodic
+  //      count up
+  //      generate interrupts 
+  gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, true, true);
+
+	// init globals
+	
+	Button_interrupted = 0;
+	Button_value = 0;
+	Button_value_old = read_button();
+	
+	up_button = false;
+  right_button = false;
+  left_button = false;
+  down_button = false;
+  sw2_button = false;
+	button_flag = 0;
+	
+	// at the end of enable timer
+  gp_timer_enable(TIMER1_BASE, SEC_ONE);
+  
 	EnableInterrupts();
   return true;
 }
@@ -140,11 +195,19 @@ void eeprom_print_info(void){
 	}
 }
 
+
+void GPIOF_Handler(void){
+	Button_interrupted = 1;
+	GPIOF->ICR |= 0xff;
+	Button_value = read_button();
+	
+}
 //*****************************************************************************
 //*****************************************************************************
 int 
 main(void)
 { 
+	  char msg[80];
 	init_hardware();
 	
 	// eeprom print name
@@ -155,7 +218,6 @@ main(void)
 		// reset
 	// if SW2 is pressed, write name
 	eeprom_write_info();
-
 	
 	// wireless connect
 		// set up master
@@ -185,6 +247,64 @@ main(void)
 		// update sunlight pos based on accelerometer (reach leftmost edge disapper)
 		// collect sunlight at bottom edge
 		// tranmit sunlight positive change to master
-	while(1){};
+	while(1){
+		if(ALERT_TIMER1_LED_UPDATE) {
+			sprintf(msg,"SEC :James");
+			// LED_blind();
+			ALERT_TIMER1_LED_UPDATE = false;
+    }
+		
+		if (Button_interrupted == 1){
+			DisableInterrupts();
+			Button_interrupted = 0;
+			if (((Button_value & (1 << DIR_BTN_UP_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_UP_PIN)) != 0)){
+				light_control(0x1);
+				up_button = true;
+			}
+			else if (((Button_value & (1 << DIR_BTN_DOWN_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_DOWN_PIN)) != 0)){
+				light_control(0x2);
+				down_button = true;
+			}
+			else if (((Button_value & (1 << DIR_BTN_LEFT_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_LEFT_PIN)) != 0)){
+				light_control(0x4);
+				left_button = true;
+			}
+			else if (((Button_value & (1 << DIR_BTN_RIGHT_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_RIGHT_PIN)) != 0)){
+				light_control(0x8);
+				right_button = true;
+			}
+			else if (Button_value == Button_value_old ){
+				light_control(0x10);
+				sw2_button = true;
+			}
+			button_flag = (Button_value_old ^ Button_value) & (~Button_value);
+			if (Button_value_old == Button_value) button_flag = 0x10;
+			Button_value_old = Button_value;
+			EnableInterrupts();
+		}
+		
+		//if (button_flag != 0) light_control(button_flag);
+//		if (up_button){
+//			light_control(0x1);
+//			up_button = false;
+//		}
+//		if (down_button){
+//			light_control(0x2);
+//			down_button = false;
+//		}
+//		if (left_button){
+//			light_control(0x4);
+//			left_button = false;
+//		}
+//		if (right_button){
+//			light_control(0x8);
+//			right_button = false;
+//		}
+//		if (sw2_button){
+//			light_control(0x10);
+//			sw2_button = false;
+//		}
+	
+	};
 	// Reach infinite loop after the game is over.
 }

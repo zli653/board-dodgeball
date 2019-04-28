@@ -178,3 +178,62 @@ bool gp_timer_config_32(uint32_t base_addr, uint32_t mode, bool count_up, bool e
 	gp_timer->IMR |= (enable_interrupts & TIMER_IMR_TATOIM);
   return true;  
 }
+
+IRQn_Type timer_get_irq_num(uint32_t base)
+{
+   switch(base)
+   {
+     case TIMER1_BASE:
+     {
+       return TIMER1A_IRQn;
+     }
+     case TIMER4_BASE:
+     {
+       return TIMER4A_IRQn;
+     }
+     default:
+     {
+       return 0;
+     }
+   }
+}
+
+// enable timer A with specific ticks
+bool gp_timer_enable(uint32_t base_addr, uint32_t ticks)
+{
+  TIMER0_Type *gp_timer;
+  IRQn_Type interrupt_IRQ;
+	
+  // Verify the base address.
+  if ( ! verify_base_addr(base_addr) )
+  {
+    return false;
+  }
+
+  // Type cast the base address to a TIMER0_Type struct
+  gp_timer = (TIMER0_Type *)base_addr;
+
+  	interrupt_IRQ = timer_get_irq_num(base_addr);
+	// Set the Priority
+  NVIC_SetPriority(interrupt_IRQ, 1);
+
+  // Enable the Interrupt in the NVIC
+  NVIC_EnableIRQ(interrupt_IRQ);
+  
+  //*********************    
+  // ADD CODE
+  //*********************
+	// turn the timer off	
+  gp_timer->CTL &= ~(TIMER_CTL_TAEN | TIMER_CTL_TBEN);
+	
+  // sets the interval of Timer A to be the value of parameter 'ticks'
+	gp_timer->TAILR = ticks;
+	
+	
+	
+	gp_timer->CTL |= TIMER_CTL_TAEN;
+	// busy-waits until a Timer A timeout occurs
+	// while( (gp_timer->RIS & TIMER_RIS_TATORIS) == 0) {}
+	
+  return true;
+}

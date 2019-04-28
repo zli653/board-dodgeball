@@ -27,7 +27,19 @@ Project File Date:  04/23/2019
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Project'
-".\obj\ece353_base_project.axf" - 0 Error(s), 0 Warning(s).
+compiling timers.c...
+..\drivers\c\timers.c(196): warning:  #188-D: enumerated type mixed with another type
+         return 0;
+..\drivers\c\timers.c: 1 warning, 0 errors
+compiling main.c...
+main.c(120): warning:  #223-D: function "gp_timer_config_32" declared implicitly
+    gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, true, true);
+main.c(136): warning:  #223-D: function "gp_timer_enable" declared implicitly
+    gp_timer_enable(TIMER1_BASE, SEC_ONE);
+main.c: 2 warnings, 0 errors
+linking...
+Program Size: Code=7560 RO-data=892 RW-data=48 ZI-data=544  
+".\obj\ece353_base_project.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,9 +66,9 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup:1.0.1
       Source file:   Device\Source\system_TM4C123.c
-      Source file:   Device\Source\ARM\startup_TM4C123.s
       Include file:  Device\Include\TM4C123\TM4C123.h
-Build Time Elapsed:  00:00:00
+      Source file:   Device\Source\ARM\startup_TM4C123.s
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
