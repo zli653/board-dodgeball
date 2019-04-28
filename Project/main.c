@@ -26,16 +26,11 @@ volatile bool ALERT_TIMER1_LED_UPDATE;
 
 volatile int Button_interrupted;
 volatile int Button_value;
-volatile int Button_value_old;
+int Button_old;
+volatile int Button_flag;
+int Button_real_flag;
 
-bool up_button;
-bool right_button;
-bool left_button;
-bool down_button;
-bool sw2_button;
-int button_flag;
-
-
+int pick_plant[3];
 //*****************************************************************************
 //*****************************************************************************
 void DisableInterrupts(void)
@@ -123,14 +118,9 @@ bool init_hardware(void)
 	
 	Button_interrupted = 0;
 	Button_value = 0;
-	Button_value_old = read_button();
-	
-	up_button = false;
-  right_button = false;
-  left_button = false;
-  down_button = false;
-  sw2_button = false;
-	button_flag = 0;
+	Button_flag = 0x0;
+	Button_old = 0x0f;
+	Button_real_flag = 0x00;
 	
 	// at the end of enable timer
   gp_timer_enable(TIMER1_BASE, SEC_ONE);
@@ -197,9 +187,32 @@ void eeprom_print_info(void){
 
 
 void GPIOF_Handler(void){
-	Button_interrupted = 1;
-	GPIOF->ICR |= 0xff;
+	Button_flag = read_interrupt();
 	Button_value = read_button();
+	Button_interrupted =	1;
+	GPIOF->ICR |= 0xff;
+	
+}
+
+void LCD_draw_map(){
+		lcd_draw_image(
+									120,                 // X Pos
+                  bitmapDownWidthPixels,   // Image Horizontal Width
+                  210,                 // Y Pos
+                  bitmapDownHeightPixels,  // Image Vertical Height
+                  bitmapDownBitmaps,       // Image
+                  LCD_COLOR_RED,      // Foreground Color
+                  LCD_COLOR_GREEN     // Background Color
+                );
+	lcd_draw_image( 
+									120,                 // X Pos
+                  bitmapUpWidthPixels,   // Image Horizontal Width
+                  70,                 // Y Pos
+                  bitmapUpHeightPixels,  // Image Vertical Height
+                  bitmapUpBitmaps,       // Image
+                  LCD_COLOR_RED,      // Foreground Color
+                  LCD_COLOR_GREEN     // Background Color
+                );
 	
 }
 //*****************************************************************************
@@ -207,17 +220,16 @@ void GPIOF_Handler(void){
 int 
 main(void)
 { 
-	  char msg[80];
+	char msg[80];
 	init_hardware();
 	
 	// eeprom print name
 	eeprom_print_info();
-	
+	LCD_draw_map();
 	// init_serial_debug(true,true);
 	// io_expander_init();
 		// reset
-	// if SW2 is pressed, write name
-	eeprom_write_info();
+	
 	
 	// wireless connect
 		// set up master
@@ -253,57 +265,28 @@ main(void)
 			// LED_blind();
 			ALERT_TIMER1_LED_UPDATE = false;
     }
-		
 		if (Button_interrupted == 1){
-			DisableInterrupts();
+			if (Button_flag == 0){
+				Button_real_flag |= 0x10;
+			} else {
+				Button_real_flag = (Button_old) & (~Button_value);
+				Button_old = Button_value;
+			}
 			Button_interrupted = 0;
-			if (((Button_value & (1 << DIR_BTN_UP_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_UP_PIN)) != 0)){
-				light_control(0x1);
-				up_button = true;
-			}
-			else if (((Button_value & (1 << DIR_BTN_DOWN_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_DOWN_PIN)) != 0)){
-				light_control(0x2);
-				down_button = true;
-			}
-			else if (((Button_value & (1 << DIR_BTN_LEFT_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_LEFT_PIN)) != 0)){
-				light_control(0x4);
-				left_button = true;
-			}
-			else if (((Button_value & (1 << DIR_BTN_RIGHT_PIN)) == 0) && ((Button_value_old & (1 << DIR_BTN_RIGHT_PIN)) != 0)){
-				light_control(0x8);
-				right_button = true;
-			}
-			else if (Button_value == Button_value_old ){
-				light_control(0x10);
-				sw2_button = true;
-			}
-			button_flag = (Button_value_old ^ Button_value) & (~Button_value);
-			if (Button_value_old == Button_value) button_flag = 0x10;
-			Button_value_old = Button_value;
-			EnableInterrupts();
 		}
 		
-		//if (button_flag != 0) light_control(button_flag);
-//		if (up_button){
-//			light_control(0x1);
-//			up_button = false;
-//		}
-//		if (down_button){
-//			light_control(0x2);
-//			down_button = false;
-//		}
-//		if (left_button){
-//			light_control(0x4);
-//			left_button = false;
-//		}
-//		if (right_button){
-//			light_control(0x8);
-//			right_button = false;
-//		}
-//		if (sw2_button){
-//			light_control(0x10);
-//			sw2_button = false;
-//		}
+		
+		
+		
+		
+		
+		// if SW2 is pressed, write name
+		if ((Button_real_flag & BUTTON_SW2) != 0){
+			eeprom_write_info();
+			Button_real_flag &= BUTTON_SW2;
+		}
+		
+		
 	
 	};
 	// Reach infinite loop after the game is over.

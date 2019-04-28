@@ -35,6 +35,8 @@
 #include "eeprom.h"
 #include "serial_debug.h"
 #include "io_expander.h"
+#include "timers.h"
+#include "the_map.h"
 // #include "team_info.h"
 
 
@@ -43,5 +45,15 @@
 #define NUM_BYTES	 80
 // unsed: info for further usage
 #define NUM_FIELD    3
+#define BUTTON_UP		0x1
+#define BUTTON_DOWN 0x2
+#define BUTTON_LEFT 0x4
+#define BUTTON_RIGHT 0x8
+#define BUTTON_SW2	0x10
+
+// Game data global
+#define SELECT_Peashooter 1
+#define SELECT_Tall_nut 2
+#define SELECT_Cherry_Bomb 3
 
 #endif

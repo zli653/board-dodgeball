@@ -500,6 +500,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Images</GroupName>
+          <Files>
+            <File>
+              <FileName>the_map.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\the_map.c</FilePath>
+            </File>
+            <File>
+              <FileName>the_map.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\the_map.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
         <Group>
