@@ -44,13 +44,11 @@
 #include "accel.h"
 #include "ft6x06.h"
 #include "screen.h"
-
+#include "ep.h"
 // #include "team_info.h"
 
 
-#define ADDR_START 	 256
-// 80 characters for each field
-#define NUM_BYTES	 80
+
 // unsed: info for further usage
 #define NUM_FIELD    3
 #define BUTTON_UP		0x1
@@ -60,8 +58,6 @@
 #define BUTTON_SW2	0x10
 
 // Game data global
-#define SELECT_Peashooter 1
-#define SELECT_Tall_nut 2
-#define SELECT_Cherry_Bomb 3
+#define PLAYER_Y_BASE 242 
 
 #endif

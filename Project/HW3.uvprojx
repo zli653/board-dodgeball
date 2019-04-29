@@ -392,6 +392,11 @@
               <FileType>5</FileType>
               <FilePath>.\main.h</FilePath>
             </File>
+            <File>
+              <FileName>archive.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\archive.txt</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -536,6 +541,16 @@
               <FileName>screen.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\screen.h</FilePath>
+            </File>
+            <File>
+              <FileName>ep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ep.c</FilePath>
+            </File>
+            <File>
+              <FileName>ep.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ep.h</FilePath>
             </File>
           </Files>
         </Group>

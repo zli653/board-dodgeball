@@ -26,14 +26,19 @@ volatile bool ALERT_TIMER1_LED_UPDATE;
 #define MSEC_EIGHT     50000
 volatile bool ALERT_TIMER4_ACC_UPDATE;
 
-volatile int Button_interrupted;
+volatile uint8_t Button_interrupted;
 volatile int Button_value;
 int Button_old;
 volatile int Button_flag;
 int Button_real_flag;
 
-int value;
-int pick_plant[3];
+uint8_t game_started;
+uint8_t jump;
+
+uint16_t player_x;
+uint16_t player_y;
+int16_t player_y_offset;
+
 //*****************************************************************************
 //*****************************************************************************
 void DisableInterrupts(void)
@@ -108,7 +113,6 @@ bool init_i2c() {
 
 	
 	if(initializeI2CMaster(I2C1_BASE)!= I2C_OK)  return false;
-	
 	return true;
 }
 
@@ -118,14 +122,13 @@ bool init_hardware(void)
 {
 	// TODO: initial all hardware here
 	DisableInterrupts();
-	init_serial_debug(true, true);
 	init_gpio();
-	// eeprom_init();
+	
+	init_serial_debug(true, true);
 	if(!init_i2c()) return false;
 
-	// lcd_config_gpio();
 	lcd_config_screen();
-	lcd_clear_screen(LCD_COLOR_BLACK);  
+	lcd_clear_screen(LCD_COLOR_BLACK);
 	io_expander_init();
 	
 	accel_initialize();
@@ -137,14 +140,13 @@ bool init_hardware(void)
   //      count up
   //      generate interrupts 
   gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, true, true);
-
+	gp_timer_enable(TIMER1_BASE, SEC_ONE);
   // Initialize the TIMER4A to be a 
   //      16-bit
   //      peridoc
   //      count down
   //      with interrupts
-  gp_timer_config_16(TIMER4_BASE, TIMER_TAMR_TAMR_PERIOD, false, true, 7);
-  
+  gp_timer_config_16(TIMER4_BASE, TIMER_TAMR_TAMR_PERIOD, false, true, 7); 
   gp_timer_enable(TIMER4_BASE, MSEC_EIGHT);
 
 	// init globals
@@ -154,70 +156,15 @@ bool init_hardware(void)
 	Button_flag = 0x0;
 	Button_old = 0x0f;
 	Button_real_flag = 0x00;
-	
+	game_started = 0;
+	jump = 0;
 	// at the end of enable timer
-  gp_timer_enable(TIMER1_BASE, SEC_ONE);
+	player_x = 120;
+	player_y_offset = 0;
   
 	EnableInterrupts();
   return true;
 }
-
-void eeprom_write_info(void)
-{
-	uint16_t addr;
-	uint16_t addr_start;
-	unsigned char student1[80] = "Zeming Li\n";
-	unsigned char student2[80] = "Yan Xiao\n";
-	// TODO: change team number
-	unsigned char team_num[80] = "20\n";
-
-	addr_start = ADDR_START;
-	for(addr = addr_start; addr <(addr_start + NUM_BYTES); addr++)
-	{
-      	eeprom_byte_write(I2C1_BASE,addr, student1[addr - addr_start]);
-	}
-	addr_start = ADDR_START + NUM_BYTES;
-	for(addr = addr_start; addr <(addr_start + NUM_BYTES); addr++)
-	{
-    	eeprom_byte_write(I2C1_BASE,addr, student2[addr - addr_start]);
-	}
-	addr_start = ADDR_START + 2 * NUM_BYTES;	
-	for(addr = addr_start; addr <(addr_start + NUM_BYTES); addr++)
-	{
-      	eeprom_byte_write(I2C1_BASE,addr, team_num[addr - addr_start]);
-	}
-
-}
-
-void eeprom_print_info(void){
-	uint16_t addr;
-	uint16_t addr_start;
-	unsigned char read_val;
-	
-	addr_start = ADDR_START;
-	printf("Student1: ");
-	for(addr = addr_start; addr <(addr_start + NUM_BYTES); addr++)
-	{
-      	eeprom_byte_read(I2C1_BASE,addr, (uint8_t*)&read_val);
-			  // eeprom_byte_read(I2C1_BASE,addr, &read_val);
-      	printf("%c", read_val);
-	}
-	addr_start = ADDR_START + NUM_BYTES;
-	printf("Student2: ");
-	for(addr = addr_start; addr <(addr_start + NUM_BYTES); addr++)
-	{
-      	eeprom_byte_read(I2C1_BASE,addr, (uint8_t*)&read_val);
-      	printf("%c", read_val);
-	}
-	addr_start = ADDR_START + 2 * NUM_BYTES;	
-	printf("Team number: ");
-	for(addr = addr_start; addr <(addr_start + NUM_BYTES); addr++)
-	{
-      	eeprom_byte_read(I2C1_BASE,addr, (uint8_t*)&read_val);
-      	printf("%c", read_val);
-	}
-}
-
 
 void GPIOF_Handler(void){
 	Button_flag = read_interrupt();
@@ -241,40 +188,9 @@ main(void)
 	// eeprom print name
 	eeprom_print_info();
 	LCD_map_init();
-	// init_serial_debug(true,true);
-	// io_expander_init();
-		// reset
-	
-	
-	// wireless connect
-		// set up master
-		// draw map
-		// print string on top edge
-	  // wait for user press up bottom
-	
-		// slave
-	  // draw different map
-		// print string on top edge
-	
-	// while start
-	// running game
-	// master
-	  // update sunlight sum
-	  // get bottom press to change item selection
-	  // get touch screen to update item location
-	  // transmit sunlight negative change to master
-		// update zoombie info (hp, pos, isalive)
-		// draw bullet
-		// update plant (ho, pos) (and then draw)
-		// transmit zoombie dead pos
-
-	// slave
-	  // random generate sunlight pos
-		// get zoombie dead pos
-		// update sunlight pos based on accelerometer (reach leftmost edge disapper)
-		// collect sunlight at bottom edge
-		// tranmit sunlight positive change to master
+	jump = 1;	
 	while(1){
+		// Read input
 		if(ALERT_TIMER1_LED_UPDATE) {
 			printf("SEC :James");
 			// LED_blind();
@@ -287,12 +203,14 @@ main(void)
 			// printf("ACCEL X: %d\n",accel_x);
 			ALERT_TIMER4_ACC_UPDATE = false;
     }
+		
 		touch_event = ft6x06_read_td_status();
 		if (touch_event > 0) {
 			touch_x = ft6x06_read_x();
 			touch_y = ft6x06_read_y();
 			printf("TOUCH X: %d\n",touch_x);
 		}	
+		
 		if (Button_interrupted == 1){
 			if (Button_flag == 0){
 				Button_real_flag |= 0x10;
@@ -304,19 +222,41 @@ main(void)
 		}
 		
 		
-		
-		
-		if ((Button_real_flag & BUTTON_DOWN) != 0){
-			value++;
-			Button_real_flag &= ~BUTTON_DOWN;
-		}
-		
-		// if SW2 is pressed, write name
+		// react to input
+			// No matter game started or not
+			// if SW2 is pressed, write name
 		if ((Button_real_flag & BUTTON_SW2) != 0){
 			eeprom_write_info();
 			Button_real_flag &= BUTTON_SW2;
 			
 		}
+		
+		if (game_started == 0){
+			if ((Button_real_flag & BUTTON_DOWN) != 0){
+				game_started = 1;
+				// TODO: read highest score
+				LCD_score_init(100);
+				Button_real_flag &= ~BUTTON_DOWN;
+			}
+		} 
+
+		if (game_started ==1){
+			
+			if (jump != 0){
+				printf("Jump\n\r");
+				player_y_offset = 3;
+				player_y = PLAYER_Y_BASE + player_y_offset;
+				player_y_offset --;
+				if (player_y_offset <= -4){
+					jump = 0;
+				}
+			}
+		
+		}
+			
+		// LCD_draw_player(player_x, player_y);
+		
+		
 		
 		
 	

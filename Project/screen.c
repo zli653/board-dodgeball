@@ -98,7 +98,7 @@ void LCD_score_init(uint16_t highest){
 									numbers_WidthPixels,   // Image Horizontal Width
 									300,                 // Y Pos
 									numbers_HeightPixels,  // Image Vertical Height
-									numbers[last],       // Image
+									numbers[second],       // Image
 									LCD_COLOR_WHITE,      // Foreground Color
 									LCD_COLOR_BLACK     // Background Color
 								);
@@ -107,7 +107,7 @@ void LCD_score_init(uint16_t highest){
 									numbers_WidthPixels,   // Image Horizontal Width
 									300,                 // Y Pos
 									numbers_HeightPixels,  // Image Vertical Height
-									numbers[second],       // Image
+									numbers[last],       // Image
 									LCD_COLOR_WHITE,      // Foreground Color
 									LCD_COLOR_BLACK     // Background Color
 								);

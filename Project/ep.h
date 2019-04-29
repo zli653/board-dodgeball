@@ -1,5 +1,5 @@
-#ifndef __SCREEN_H__
-#define __SCREEN_H__
+#ifndef __EP_H__
+#define __EP_H__
 
 
 #include "TM4C123.h"
@@ -18,8 +18,12 @@
 #include "accel.h"
 #include "screen.h"
 
-void LCD_map_init(void);
-void LCD_draw_player(uint16_t x_pos, uint16_t y_pos);
-void LCD_update_score(uint16_t score);
-void LCD_score_init(uint16_t highest);
+
+#define ADDR_START 	 256
+// 80 characters for each field
+#define NUM_BYTES	 80
+
+
+void eeprom_write_info(void);
+void eeprom_print_info(void);
 #endif
