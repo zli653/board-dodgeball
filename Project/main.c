@@ -30,6 +30,7 @@ int Button_old;
 volatile int Button_flag;
 int Button_real_flag;
 
+int value;
 int pick_plant[3];
 //*****************************************************************************
 //*****************************************************************************
@@ -104,7 +105,7 @@ bool init_hardware(void)
 	lcd_config_screen();
 	lcd_clear_screen(LCD_COLOR_BLACK);  
 	io_expander_init();
-	
+	prepare_array();
 	
   // inside initalize hardware
   // Initialize the TIMER1 to be a 
@@ -202,7 +203,7 @@ void LCD_draw_map(){
                   bitmapDownHeightPixels,  // Image Vertical Height
                   bitmapDownBitmaps,       // Image
                   LCD_COLOR_RED,      // Foreground Color
-                  LCD_COLOR_GREEN     // Background Color
+                  LCD_COLOR_YELLOW     // Background Color
                 );
 	lcd_draw_image( 
 									120,                 // X Pos
@@ -211,9 +212,92 @@ void LCD_draw_map(){
                   bitmapUpHeightPixels,  // Image Vertical Height
                   bitmapUpBitmaps,       // Image
                   LCD_COLOR_RED,      // Foreground Color
-                  LCD_COLOR_GREEN     // Background Color
+                  LCD_COLOR_YELLOW     // Background Color
+                );
+	lcd_draw_image( 
+									120,                 // X Pos
+                  start_gameWidthPixels,   // Image Horizontal Width
+                  300,                 // Y Pos
+                  start_gameHeightPixels,  // Image Vertical Height
+                  start_gameBitmaps,       // Image
+                  LCD_COLOR_WHITE,      // Foreground Color
+                  LCD_COLOR_BLACK     // Background Color
                 );
 	
+}
+
+void update_score(uint16_t score){
+	uint8_t first = score % 10;
+	uint8_t second = (score / 10) % 10;
+	uint8_t last = (score / 100) % 10;
+	// need to remove this part
+		lcd_draw_image( 
+									105,                 // X Pos
+                  scoreWidthPixels,   // Image Horizontal Width
+                  300,                 // Y Pos
+                  scoreHeightPixels,  // Image Vertical Height
+                  scoreBitmaps,       // Image
+                  LCD_COLOR_WHITE,      // Foreground Color
+                  LCD_COLOR_BLACK     // Background Color
+                );
+		lcd_draw_image( 
+									103,                 // X Pos
+									numbers_WidthPixels,   // Image Horizontal Width
+									300,                 // Y Pos
+									numbers_HeightPixels,  // Image Vertical Height
+									numbers[first],       // Image
+									LCD_COLOR_WHITE,      // Foreground Color
+									LCD_COLOR_BLACK     // Background Color
+								);
+		lcd_draw_image( 
+									95,                 // X Pos
+									numbers_WidthPixels,   // Image Horizontal Width
+									300,                 // Y Pos
+									numbers_HeightPixels,  // Image Vertical Height
+									numbers[second],       // Image
+									LCD_COLOR_WHITE,      // Foreground Color
+									LCD_COLOR_BLACK     // Background Color
+								);
+		lcd_draw_image( 
+									111,                 // X Pos
+									numbers_WidthPixels,   // Image Horizontal Width
+									300,                 // Y Pos
+									numbers_HeightPixels,  // Image Vertical Height
+									numbers[last],       // Image
+									LCD_COLOR_WHITE,      // Foreground Color
+									LCD_COLOR_BLACK     // Background Color
+								);
+		
+
+
+		// update current score 
+		lcd_draw_image( 
+									212,                 // X Pos
+									numbers_WidthPixels,   // Image Horizontal Width
+									300,                 // Y Pos
+									numbers_HeightPixels,  // Image Vertical Height
+									numbers[last],       // Image
+									LCD_COLOR_WHITE,      // Foreground Color
+									LCD_COLOR_BLACK     // Background Color
+								);
+		lcd_draw_image( 
+									220,                 // X Pos
+									numbers_WidthPixels,   // Image Horizontal Width
+									300,                 // Y Pos
+									numbers_HeightPixels,  // Image Vertical Height
+									numbers[second],       // Image
+									LCD_COLOR_WHITE,      // Foreground Color
+									LCD_COLOR_BLACK     // Background Color
+								);
+		lcd_draw_image( 
+									228,                 // X Pos
+									numbers_WidthPixels,   // Image Horizontal Width
+									300,                 // Y Pos
+									numbers_HeightPixels,  // Image Vertical Height
+									numbers[first],       // Image
+									LCD_COLOR_WHITE,      // Foreground Color
+									LCD_COLOR_BLACK     // Background Color
+								);
 }
 //*****************************************************************************
 //*****************************************************************************
@@ -226,6 +310,7 @@ main(void)
 	// eeprom print name
 	eeprom_print_info();
 	LCD_draw_map();
+	update_score(100);
 	// init_serial_debug(true,true);
 	// io_expander_init();
 		// reset
@@ -278,12 +363,17 @@ main(void)
 		
 		
 		
-		
+		if ((Button_real_flag & BUTTON_DOWN) != 0){
+			value++;
+			update_score(value);
+			Button_real_flag &= ~BUTTON_DOWN;
+		}
 		
 		// if SW2 is pressed, write name
 		if ((Button_real_flag & BUTTON_SW2) != 0){
 			eeprom_write_info();
 			Button_real_flag &= BUTTON_SW2;
+			
 		}
 		
 		

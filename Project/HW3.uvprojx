@@ -512,6 +512,16 @@
               <FileType>5</FileType>
               <FilePath>.\the_map.h</FilePath>
             </File>
+            <File>
+              <FileName>words.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\words.c</FilePath>
+            </File>
+            <File>
+              <FileName>words.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\words.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

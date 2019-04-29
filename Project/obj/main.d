@@ -26,3 +26,4 @@
 .\obj\main.o: ..\peripherals\include\io_expander.h
 .\obj\main.o: ..\drivers\include\timers.h
 .\obj\main.o: the_map.h
+.\obj\main.o: words.h
