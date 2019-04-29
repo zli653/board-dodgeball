@@ -337,8 +337,9 @@ void update_score(uint16_t score){
 int 
 main(void)
 { 
-	char msg[80];
-	int16_t x;
+	// char msg[80];
+	uint8_t touch_event;
+	int16_t accel_x, touch_x, touch_y;
 	init_hardware();
 	
 	// eeprom print name
@@ -380,18 +381,23 @@ main(void)
 		// tranmit sunlight positive change to master
 	while(1){
 		if(ALERT_TIMER1_LED_UPDATE) {
-			sprintf(msg,"SEC :James");
+			printf("SEC :James");
 			// LED_blind();
 			ALERT_TIMER1_LED_UPDATE = false;
     }
     if(ALERT_TIMER4_ACC_UPDATE) {
 			// put_string("SEC :James");
 			// check accelerator();
-			x = accel_read_x();	
-			printf(msg,"X: %d\n",x);
+			// accel_x = accel_read_x();	
+			// printf("ACCEL X: %d\n",accel_x);
 			ALERT_TIMER4_ACC_UPDATE = false;
     }
-
+		touch_event = ft6x06_read_td_status();
+		if (touch_event > 0) {
+			touch_x = ft6x06_read_x();
+			touch_y = ft6x06_read_y();
+			printf("TOUCH X: %d\n",touch_x);
+		}	
 		if (Button_interrupted == 1){
 			if (Button_flag == 0){
 				Button_real_flag |= 0x10;

@@ -1,6 +1,6 @@
 Dependencies for Project 'HW3', Target 'Project': (DO NOT MODIFY !)
-F (.\main.c)(0x5CC664B7)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\include -I ..\drivers\include -I ..\peripherals\include --debug-I.\RTE\_Project-IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IE:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="526" -D_RTE_ -DTM4C123GH6PM-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
-I (main.h)(0x5CC66448)
+F (.\main.c)(0x5CC66BE4)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\include -I ..\drivers\include -I ..\peripherals\include --debug-I.\RTE\_Project-IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IE:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="526" -D_RTE_ -DTM4C123GH6PM-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
+I (main.h)(0x5CC66A19)
 I (E:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599FA01C)
 I (E:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599FA01E)
 I (E:\Keil_v5\ARM\ARMCC\include\string.h)(0x599FA01C)
@@ -31,7 +31,8 @@ I (words.h)(0x5CC66307)
 I (..\peripherals\include\accel.h)(0x5CB73469)
 I (..\drivers\include\spi.h)(0x5BC74758)
 I (..\peripherals\include\spi_select.h)(0x5C093DE0)
-F (.\main.h)(0x5CC66448)()
+I (..\peripherals\include\ft6x06.h)(0x5CADEC25)
+F (.\main.h)(0x5CC66A19)()
 F (..\peripherals\c\serial_debug.c)(0x5CC28940)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I C:\Keil_v5\ARM\Pack\ARM\CMSIS\3.20.4\CMSIS\Include -I ..\include -I ..\drivers\include -I ..\peripherals\include --debug-I.\RTE\_Project-IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include-IE:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123-D__UVISION_VERSION="526" -D_RTE_ -DTM4C123GH6PM-o .\obj\serial_debug.o --omf_browse .\obj\serial_debug.crf --depend .\obj\serial_debug.d)
 I (..\peripherals\include\serial_debug.h)(0x5BC7475E)
 I (..\drivers\include\gpio_port.h)(0x5BC74758)

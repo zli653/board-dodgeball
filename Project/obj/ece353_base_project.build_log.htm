@@ -30,10 +30,14 @@ Build target 'Project'
 compiling main.c...
 main.c(65): warning:  #177-D: variable "count"  was declared but never referenced
   	  static int count = 0;
-main.c: 1 warning, 0 errors
+main.c(342): warning:  #177-D: variable "accel_x"  was declared but never referenced
+  	int16_t accel_x, touch_x, touch_y;
+main.c(342): warning:  #550-D: variable "touch_y"  was set but never used
+  	int16_t accel_x, touch_x, touch_y;
+main.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=10316 RO-data=9960 RW-data=192 ZI-data=584  
-".\obj\ece353_base_project.axf" - 0 Error(s), 1 Warning(s).
+Program Size: Code=10000 RO-data=9960 RW-data=192 ZI-data=584  
+".\obj\ece353_base_project.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -62,7 +66,7 @@ Package Vendor: Keil
       Include file:  Device\Include\TM4C123\TM4C123.h
       Source file:   Device\Source\system_TM4C123.c
       Source file:   Device\Source\ARM\startup_TM4C123.s
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

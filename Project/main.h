@@ -42,6 +42,7 @@
 #include "gpio_port.h"
 #include "uart.h"
 #include "accel.h"
+#include "ft6x06.h"
 
 // #include "team_info.h"
 
