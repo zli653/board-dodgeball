@@ -23,6 +23,8 @@
 #include "main.h"
 #define SEC_ONE     50000000
 volatile bool ALERT_TIMER1_LED_UPDATE;
+#define MSEC_EIGHT     50000
+volatile bool ALERT_TIMER4_ACC_UPDATE;
 
 volatile int Button_interrupted;
 volatile int Button_value;
@@ -57,6 +59,26 @@ void TIMER1A_Handler(void)
 	
 	ALERT_TIMER1_LED_UPDATE = true;
 }
+
+void TIMER4A_Handler(void)
+{
+	  static int count = 0;
+
+	TIMER0_Type *gp_timer = (TIMER0_Type *)TIMER4_BASE;
+	// acknowledges (clears) a Timer A timeout
+	gp_timer->ICR |= TIMER_ICR_TATOCINT;
+	
+	ALERT_TIMER4_ACC_UPDATE = true;
+	/* if ( count == 125)
+	{
+			ALERT_TIMER4_ACC_UPDATE = true;
+			count = 0;
+	}
+	else
+	{
+		count++;
+	} */
+}	
 
 bool init_gpio(){
 	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
@@ -107,6 +129,8 @@ bool init_hardware(void)
 	io_expander_init();
 	prepare_array();
 	
+	accel_initialize();
+	
   // inside initalize hardware
   // Initialize the TIMER1 to be a 
   //      32-bit
@@ -114,6 +138,15 @@ bool init_hardware(void)
   //      count up
   //      generate interrupts 
   gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, true, true);
+
+  // Initialize the TIMER4A to be a 
+  //      16-bit
+  //      peridoc
+  //      count down
+  //      with interrupts
+  gp_timer_config_16(TIMER4_BASE, TIMER_TAMR_TAMR_PERIOD, false, true, 7);
+  
+  gp_timer_enable(TIMER4_BASE, MSEC_EIGHT);
 
 	// init globals
 	
@@ -305,6 +338,7 @@ int
 main(void)
 { 
 	char msg[80];
+	int16_t x;
 	init_hardware();
 	
 	// eeprom print name
@@ -350,6 +384,14 @@ main(void)
 			// LED_blind();
 			ALERT_TIMER1_LED_UPDATE = false;
     }
+    if(ALERT_TIMER4_ACC_UPDATE) {
+			// put_string("SEC :James");
+			// check accelerator();
+			x = accel_read_x();	
+			printf(msg,"X: %d\n",x);
+			ALERT_TIMER4_ACC_UPDATE = false;
+    }
+
 		if (Button_interrupted == 1){
 			if (Button_flag == 0){
 				Button_real_flag |= 0x10;

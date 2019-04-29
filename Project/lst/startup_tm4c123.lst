@@ -1232,7 +1232,7 @@ ARM Macro Assembler    Page 19
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\obj\startup_tm4c123.d -o.\obj\startup_tm4c123.o -I.\RTE\_Proj
-ect -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include -IC:\Keil_v5\ARM\P
+ect -IE:\Keil_v5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include -IE:\Keil_v5\ARM\P
 
 
 

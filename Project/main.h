@@ -38,6 +38,11 @@
 #include "timers.h"
 #include "the_map.h"
 #include "words.h"
+#include "driver_defines.h"
+#include "gpio_port.h"
+#include "uart.h"
+#include "accel.h"
+
 // #include "team_info.h"
 
 

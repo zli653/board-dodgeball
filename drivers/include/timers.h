@@ -38,4 +38,6 @@ IRQn_Type timer_get_irq_num(uint32_t base);
 
 bool gp_timer_enable(uint32_t base_addr, uint32_t ticks);
 
+bool gp_timer_config_16(uint32_t base_addr, uint32_t mode, bool count_up, bool enable_interrupts, uint32_t prescale);
+
 #endif

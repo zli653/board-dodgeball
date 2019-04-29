@@ -237,3 +237,51 @@ bool gp_timer_enable(uint32_t base_addr, uint32_t ticks)
 	
   return true;
 }
+
+bool gp_timer_config_16(uint32_t base_addr, uint32_t mode, bool count_up, bool enable_interrupts, uint32_t prescale)
+{
+  uint32_t timer_rcgc_mask;
+  uint32_t timer_pr_mask;
+  TIMER0_Type *gp_timer;
+  
+  // Verify the base address.
+  if ( ! verify_base_addr(base_addr) )
+  {
+    return false;
+  }
+  
+  // get the correct RCGC and PR masks for the base address
+  get_clock_masks(base_addr, &timer_rcgc_mask, &timer_pr_mask);
+  
+  // Turn on the clock for the timer
+  SYSCTL->RCGCTIMER |= timer_rcgc_mask;
+
+  // Wait for the timer to turn on
+  while( (SYSCTL->PRTIMER & timer_pr_mask) == 0) {};
+  
+  // Type cast the base address to a TIMER0_Type struct
+  gp_timer = (TIMER0_Type *)base_addr;
+    
+  //*********************    
+  // ADD CODE
+  //*********************
+	// turn the timer off	
+  gp_timer->CTL &= ~(TIMER_CTL_TAEN | TIMER_CTL_TBEN);  
+  
+	// set the timer for 16-bit mode	
+  gp_timer->CFG = TIMER_CFG_16_BIT;	
+
+	// clear the mode bits	
+	gp_timer->TAMR &= ~TIMER_TAMR_TAMR_M;
+	// set the timer's mode based on the 'mode' parameter
+    gp_timer->TAMR |= mode;	
+	
+	// set prescale
+	gp_timer->TAPR = prescale;	
+	// sets the direction of a General Purpose Timer based on the 'count_up' parameter
+	gp_timer->TAMR |= (count_up & TIMER_TAMR_TACDIR);	
+
+  // nables or disables Timer A timeout interrupts based on the 'enable_interrupts' parameter
+	gp_timer->IMR |= (enable_interrupts & TIMER_IMR_TATOIM);
+  return true;  
+}
