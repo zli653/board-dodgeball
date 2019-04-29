@@ -1,6 +1,8 @@
-Project/lst
-Project/obj
-Project/RTE
-Project/obj/*.o
-Project/obj/*.d
-new
+/Project/lst/
+/Project/obj/
+/Project/RTE/
+/new/
+/Project/obj/*.o
+/Project/obj/*.d
+/Project/obj/
+\Project\obj\
