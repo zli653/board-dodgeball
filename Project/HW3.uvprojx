@@ -525,6 +525,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Engine</GroupName>
+          <Files>
+            <File>
+              <FileName>screen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\screen.c</FilePath>
+            </File>
+            <File>
+              <FileName>screen.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\screen.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
         <Group>
