@@ -37,7 +37,8 @@ uint8_t jump;
 
 uint16_t player_x;
 uint16_t player_y;
-int16_t player_y_offset;
+int player_y_offset;
+int player_y_step;
 
 //*****************************************************************************
 //*****************************************************************************
@@ -160,6 +161,7 @@ bool init_hardware(void)
 	jump = 0;
 	// at the end of enable timer
 	player_x = 120;
+	player_y = PLAYER_Y_BASE;
 	player_y_offset = 0;
   
 	EnableInterrupts();
@@ -181,6 +183,7 @@ int
 main(void)
 { 
 	// char msg[80];
+	uint32_t i;
 	uint8_t touch_event;
 	int16_t accel_x, touch_x, touch_y;
 	init_hardware();
@@ -189,10 +192,18 @@ main(void)
 	eeprom_print_info();
 	LCD_map_init();
 	jump = 1;	
+	LCD_draw_bar(LEFT_BAR, 1, 50);
+	LCD_draw_bar(RIGHT_BAR, 1, 150);
+	LCD_draw_bar(RIGHT_BAR, 1, 50);
+	LCD_draw_bar(RIGHT_BAR, 2, 50);
+	LCD_draw_bar(LEFT_BAR, 0, 100);
+	LCD_draw_bar(RIGHT_BAR, 0, 50);
+	LCD_draw_bar(LEFT_BAR, 2, 100);
+	lcd_draw_block(40, 60,150,60,LCD_COLOR_BROWN);
 	while(1){
 		// Read input
 		if(ALERT_TIMER1_LED_UPDATE) {
-			printf("SEC :James");
+			// printf("SEC :James");
 			// LED_blind();
 			ALERT_TIMER1_LED_UPDATE = false;
     }
@@ -244,20 +255,22 @@ main(void)
 			
 			if (jump != 0){
 				printf("Jump\n\r");
-				player_y_offset = 3;
-				player_y = PLAYER_Y_BASE + player_y_offset;
-				player_y_offset --;
-				if (player_y_offset <= -4){
-					jump = 0;
-				}
+				jump = 0;
+				player_y_step = 4;
+				player_y_offset = 0;
 			}
-		
+			if (player_y_step > -5){
+				player_y_offset +=  player_y_step;
+				player_y = PLAYER_Y_BASE - player_y_offset;
+				player_y_step --;
+			}
+			
 		}
 			
-		// LCD_draw_player(player_x, player_y);
+		LCD_draw_player(player_x, player_y);
 		
 		
-		
+		for(i = 0; i < 100000; i++){}
 		
 	
 	};

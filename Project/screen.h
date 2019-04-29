@@ -18,8 +18,16 @@
 #include "accel.h"
 #include "screen.h"
 
+typedef enum {
+  LONG_BAR, 
+  RIGHT_BAR, 
+  LEFT_BAR,
+	POINTS_BAR
+} bar_type;
+
 void LCD_map_init(void);
 void LCD_draw_player(uint16_t x_pos, uint16_t y_pos);
 void LCD_update_score(uint16_t score);
 void LCD_score_init(uint16_t highest);
+void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos);
 #endif

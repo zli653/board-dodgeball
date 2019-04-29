@@ -121,3 +121,50 @@ void LCD_score_init(uint16_t highest){
 									LCD_COLOR_BLACK     // Background Color
 								);
 }
+
+void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos){
+		uint8_t width, height;
+		uint16_t x_pos, forColor;
+		if (type == LONG_BAR || type == POINTS_BAR){
+			x_pos = 38 + lane*80;
+			if(lane == 2){
+				x_pos += 2;
+			}
+			if (type == LONG_BAR){
+				forColor = LCD_COLOR_BLACK;
+			} else{
+				forColor = LCD_COLOR_BLUE;
+			}
+			lcd_draw_image( 
+									x_pos,                 // X Pos
+                  long_BarWidthPixels,   // Image Horizontal Width
+                  y_pos,                 // Y Pos
+                  long_BarHeightPixels,  // Image Vertical Height
+                  long_BarBitmaps,       // Image
+                  forColor,      // Foreground Color
+                  LCD_COLOR_YELLOW     // Background Color
+                );
+		} else {
+			if (type == LEFT_BAR){
+				x_pos = 18 + lane * 80;
+			} else {
+				x_pos = 58 + lane * 80;
+			}
+			if(lane == 2 && type == RIGHT_BAR){
+				x_pos += 5;
+			}
+			lcd_draw_image( 
+									x_pos,                 // X Pos
+                  short_BarWidthPixels,   // Image Horizontal Width
+                  y_pos,                 // Y Pos
+                  short_BarHeightPixels,  // Image Vertical Height
+                  short_BarBitmaps,       // Image
+                  LCD_COLOR_BLACK,      // Foreground Color
+                  LCD_COLOR_YELLOW     // Background Color
+                );
+		
+		}
+	
+		
+
+}

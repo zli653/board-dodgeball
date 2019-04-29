@@ -218,6 +218,59 @@ void lcd_draw_image(
   }
 }
 
+
+
+
+void lcd_draw_block(
+  uint16_t x_start, 
+  uint16_t image_width_bits, 
+  uint16_t y_start, 
+  uint16_t image_height_pixels, 
+  uint16_t fColor
+)
+{
+  uint16_t i,j;
+  uint8_t data;
+  uint16_t byte_index;
+  uint16_t bytes_per_row;
+  uint16_t x0;
+  uint16_t x1;
+  uint16_t y0;
+  uint16_t y1;
+ 
+  x0 = x_start - (image_width_bits/2);
+  x1 = x_start + (image_width_bits/2);
+  if( (image_width_bits & 0x01) == 0x00)
+  {
+    x1--;
+  }
+  
+  y0 = y_start  - (image_height_pixels/2);
+  y1 = y_start  + (image_height_pixels/2) ;
+  if( (image_height_pixels & 0x01) == 0x00)
+  {
+    y1--;
+  }
+  
+  lcd_set_pos(x0, x1, y0, y1);
+  
+  bytes_per_row = image_width_bits / 8;
+  if( (image_width_bits % 8) != 0)
+  {
+    bytes_per_row++;
+  }
+  
+  for (i=0;i< image_height_pixels ;i++)
+  {
+        for(j= 0; j < image_width_bits; j++)
+        {
+        
+            lcd_write_data_u16(fColor);
+            
+        }
+  }
+}
+
 /*******************************************************************************
 * Function Name: lcd_config_gpio
 ********************************************************************************
