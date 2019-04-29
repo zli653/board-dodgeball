@@ -43,6 +43,7 @@
 #include "uart.h"
 #include "accel.h"
 #include "ft6x06.h"
+#include "screen.h"
 
 // #include "team_info.h"
 
