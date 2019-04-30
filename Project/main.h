@@ -47,10 +47,6 @@
 #include "ep.h"
 // #include "team_info.h"
 
-
-
-// unsed: info for further usage
-#define NUM_FIELD    3
 #define BUTTON_UP		0x1
 #define BUTTON_DOWN 0x2
 #define BUTTON_LEFT 0x4

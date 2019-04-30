@@ -21,8 +21,9 @@
 
 #define ADDR_START 	 256
 // 80 characters for each field
-#define NUM_BYTES	 80
-
+#define FIELD_BYTES	 80
+// unsed: info for further usage
+#define NUM_FIELD    3
 
 void eeprom_write_info(void);
 void eeprom_print_info(void);

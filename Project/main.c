@@ -132,7 +132,7 @@ bool init_hardware(void)
 	lcd_clear_screen(LCD_COLOR_BLACK);
 	io_expander_init();
 	
-	accel_initialize();
+	// accel_initialize();
 	
   // inside initalize hardware
   // Initialize the TIMER1 to be a 
