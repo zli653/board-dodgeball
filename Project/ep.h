@@ -19,7 +19,7 @@
 #include "screen.h"
 
 
-#define ADDR_START 	 256
+#define ADDR_START 	 64
 // 80 characters for each field
 #define FIELD_BYTES	 80
 // unsed: info for further usage
@@ -27,4 +27,7 @@
 
 void eeprom_write_info(void);
 void eeprom_print_info(void);
+
+uint16_t eeprom_print_score(void);
+void eeprom_write_score(uint16_t score);
 #endif

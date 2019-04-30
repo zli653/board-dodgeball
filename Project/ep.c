@@ -59,14 +59,13 @@ void eeprom_print_info(void){
 
 void eeprom_write_score(uint16_t score)
 {
-	uint16_t addr;
 	uint16_t addr_start;
 	uint8_t score_hi = score >> 8;
-	uint8_t score_low = score & 0xF;
+	uint8_t score_low = score & 0xFF;
 
 	addr_start = ADDR_START+NUM_FIELD*FIELD_BYTES;
-	eeprom_byte_write(I2C1_BASE,addr, score_hi);
-	eeprom_byte_write(I2C1_BASE,addr+8, score_low);
+	eeprom_byte_write(I2C1_BASE,addr_start, score_hi);
+	eeprom_byte_write(I2C1_BASE,addr_start+1, score_low);
 }
 
 uint16_t eeprom_print_score(void)
@@ -75,6 +74,6 @@ uint16_t eeprom_print_score(void)
 	uint8_t xh, xl;
 	addr_start = ADDR_START+NUM_FIELD*FIELD_BYTES;
 	eeprom_byte_read(I2C1_BASE,addr_start, &xh);
-	eeprom_byte_read(I2C1_BASE,addr_start+8, &xl);
+	eeprom_byte_read(I2C1_BASE,addr_start+1, &xl);
 	return (xh << 8 | xl); ;
 }
