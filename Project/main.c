@@ -59,6 +59,58 @@ void EnableInterrupts(void)
 	}
 }
 
+typedef enum 
+{
+  NOT_TOUCHED,
+	NOT_TOUCHED_FINAL,
+	IN_TOUCH,
+	TOUCHED_FINAL,
+} TOUCH_STATES;
+
+static TOUCH_STATES state = NOT_TOUCHED;
+  
+bool touch_fsm_sw(uint8_t touch_event)
+{
+	// uint8_t touch_event;
+	// uint16_t touch_x, touch_y;
+	switch (state)
+	{
+		case NOT_TOUCHED:
+		{
+			if(touch_event > 0) {state = TOUCHED_FINAL; }
+			else { state = NOT_TOUCHED; }
+		  return false;
+			break;
+		}
+		case TOUCHED_FINAL:
+		{
+			if(touch_event > 0) {state = IN_TOUCH; return true;}
+			else { state = NOT_TOUCHED; }
+		  return false;
+			break;
+		}
+		case NOT_TOUCHED_FINAL:
+		{
+			if(touch_event > 0) {state = IN_TOUCH;}
+			else { state = NOT_TOUCHED; }
+		  return false;
+			break;
+		}
+		case IN_TOUCH:
+		{
+			if(touch_event > 0) {state = IN_TOUCH;}
+			else { state = NOT_TOUCHED_FINAL; }
+			return false;
+			break;
+		}
+		default:
+		{
+			while(1){};
+		}
+		return false;
+	}
+}
+
 void TIMER1A_Handler(void)
 {
 	TIMER0_Type *gp_timer = (TIMER0_Type *)TIMER1_BASE;
@@ -178,52 +230,7 @@ void GPIOF_Handler(void){
 	GPIOF->ICR |= 0xff;
 	
 }
-typedef enum 
-{
-  NOT_TOUCHED,
-  TOUCHED
-} TOUCH_STATES;
 
-static TOUCH_STATES state = NOT_TOUCHED;
-  
-bool touch_fsm_sw(uint8_t touch_event)
-{
-	// uint8_t touch_event;
-	// uint16_t touch_x, touch_y;
-switch (state)
-{
-	case NOT_TOUCHED:
-	{
-		if(touch_event > 0)
-		{
-			state = TOUCHED;
-			return true;
-		}
-		else
-		{
-			state = NOT_TOUCHED;
-		}
-		break;
-	}
-	case TOUCHED:
-  {
-		if(touch_event > 0)
-		{
-			state = TOUCHED;
-		}
-		else
-		{
-			state = NOT_TOUCHED;
-		}
-		break;
-	}
-	default:
-	{
-		while(1){};
-	}
-	return false;
-}
-	}
 	
 //*****************************************************************************
 //*****************************************************************************
@@ -231,13 +238,15 @@ int
 main(void)
 { 
 	// char msg[80];
+		int jump_count = 0;
 	uint32_t i;
 	uint8_t touch_event, tick_count;
 	bool tick;
 	int16_t accel_x, touch_x, touch_y, highest_score,points;
-	init_hardware();
 	value = 0;
+
 	
+		init_hardware();
 	// eeprom print name
 	eeprom_print_info();
 	LCD_map_init();
@@ -267,7 +276,21 @@ main(void)
 			// put_string("SEC :James");
 			// check accelerator();
 			accel_x = accel_read_x();	
+			touch_event = ft6x06_read_td_status();
+			jump = touch_fsm_sw(touch_event);
 			// printf("ACCEL X: %d\n",accel_x);
+			if (accel_x > 8000) {
+				player_x -= 2;
+			}	
+			else if (accel_x > 2000) {
+				player_x--;
+			}
+			else if (accel_x < -8000) {
+				player_x += 2;
+			}
+			else if (accel_x < -2000) {
+				player_x++;
+			}	
 			tick = true;
 			ALERT_TIMER4_ACC_UPDATE = false;
     }
@@ -283,7 +306,8 @@ main(void)
 //				if (touch_x < 160) touch_event = 0; 
 //			}
 //		}
-		if (!jumping) {jump = touch_fsm_sw(touch_event);}
+		// jump = touch_fsm_sw(touch_event);
+		// if (!jumping) {jump = touch_fsm_sw(touch_event);}
 			
 
 		
@@ -316,7 +340,6 @@ main(void)
 				Button_real_flag &= ~BUTTON_DOWN;
 			}
 		} 
-
 		if (game_started ==1){
 			
 			
@@ -325,11 +348,11 @@ main(void)
 				tick_count = (tick_count +1)%2;
 				if (tick_count == 0){
 					// if update each 2 tick
-				
 				}
 				// If a thing is update each tick
 				if (jump != 0){
-					printf("Jump\n\r");
+					jump_count++;
+					printf("Jump times: %d\n\r", jump_count);
 					jump = 0;
 					player_y_step = 4;
 					player_y_offset = 0;
