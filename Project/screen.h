@@ -19,6 +19,7 @@
 #include "screen.h"
 
 typedef enum {
+	UNUSED,
   LONG_BAR, 
   RIGHT_BAR, 
   LEFT_BAR,
