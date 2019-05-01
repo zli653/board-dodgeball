@@ -237,12 +237,13 @@ void GPIOF_Handler(void){
 int 
 main(void)
 { 
+	bars *game_bar;
 	bool jump;
 	// char msg[80];
 	int jump_count = 0;
 	int8_t accel_flag;
 	uint32_t i;
-	uint8_t tick_count,tick_count_t, jump_seq;
+	uint8_t tick_count,tick_count_t, jump_seq,num_bars_exist,gen_bar_flag;
 	bool tick;
 	int16_t accel_x,  highest_score,points;
 
@@ -250,19 +251,19 @@ main(void)
 	init_hardware();
 	eeprom_print_info();
 	LCD_map_init();
+	
+	num_bars_exist = 0;
+	gen_bar_flag = 0;
 	jump = 0;	
 	jump_seq = 0;
 	tick = false;
-//	LCD_draw_bar(LEFT_BAR, 1, 50);
-//	LCD_draw_bar(RIGHT_BAR, 1, 150);
-//	LCD_draw_bar(RIGHT_BAR, 1, 50);
-//	LCD_draw_bar(RIGHT_BAR, 2, 50);
-//	LCD_draw_bar(LEFT_BAR, 0, 100);
-//	LCD_draw_bar(RIGHT_BAR, 0, 50);
-//	LCD_draw_bar(LEFT_BAR, 2, 100);
-	
+
+	// LCD_draw_bar(LONG_BAR, 1, 202);
 	eeprom_write_score(999);
-	
+	game_bar = malloc(sizeof(bars)*15);
+	for(i = 0; i < 15; i++){
+		game_bar[i].type = UNUSED;
+	}
 	while(1){
 		
 		// 1s timer
@@ -270,6 +271,7 @@ main(void)
 			light_blink();
 			if (game_started){
 				points++;
+				gen_bar_flag = 1;;
 			}
 			ALERT_TIMER1_LED_UPDATE = false;
     }
@@ -351,13 +353,27 @@ main(void)
 				}else {
 					if (touch_x < 160) jump = 0; 
 				}
-				printf("after: %d, %d, %d\n\r", jump,touch_x,touch_y);
+				// printf("after: %d, %d, %d\n\r", jump,touch_x,touch_y);
 			}
+			
 			if (jump == 1) {
 				if (jump_seq == 0){
 					jump_seq = 1;
 				}
 				jump = 0;
+			}
+			
+			if (gen_bar_flag == 1){
+				gen_bar_flag = 0;
+				for (i = 0; i <= 15; i++){
+					if (i == 15) break;
+					if (game_bar[i].type == UNUSED) break;
+				}
+				if (i != 15){
+					game_bar[num_bars_exist].type = LONG_BAR;
+					game_bar[num_bars_exist].y_pos = BAR_TOP;
+					game_bar[num_bars_exist].lanes = rand() % 3;
+				}
 			}
 			
 			// check change lanes
@@ -447,6 +463,22 @@ main(void)
 				}
 				
 				// If a thing is update each tick
+				for (i = 0; i < 15; i++){
+					if (game_bar[i].type != POINTS_BAR || game_bar[i].type!= UNUSED){
+						if (game_bar[i].y_pos >= BAR_BUTTON){
+							game_bar[i].type = UNUSED;
+						}
+						game_bar[i].y_pos += 1;
+					}else	if (game_bar[i].type == POINTS_BAR){
+						if (game_bar[i].y_pos >= POINTS_BUTTON){
+							game_bar[i].type = UNUSED;
+						}
+						game_bar[i].y_pos += 2;
+					}
+					if (game_bar[i].type != UNUSED){
+						LCD_draw_bar(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos); 
+					}
+				}
 				
 			}
 			

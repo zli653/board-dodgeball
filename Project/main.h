@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <Math.h>
 
 #include "TM4C123.h"
 #include "gpio_port.h"
@@ -55,5 +55,15 @@
 
 // Game data global
 #define PLAYER_Y_BASE 242 
+#define BAR_TOP 11
+#define	BAR_BUTTON 260
+#define POINTS_BUTTON 202
+
+
+typedef struct {
+	uint8_t lanes;
+	uint8_t type;
+	uint16_t y_pos;
+}bars;
 
 #endif
