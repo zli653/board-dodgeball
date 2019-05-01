@@ -92,9 +92,14 @@ uint8_t read_button(void){
 	status	= io_expander_read_reg(MCP23017_INTCAPB_R);	
 	return status;
 }
-uint8_t read_interrupt(){
+uint8_t read_interrupt(void){
 	uint8_t status = io_expander_read_reg(MCP23017_INTFB_R);
 	
 	return status;
 }
+void light_blink(void){
+	static int value;
+	value = (value + 1) % 8;
+	light_control(1 << value);
 
+}

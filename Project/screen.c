@@ -44,6 +44,16 @@ void LCD_draw_player(uint16_t x_pos, uint16_t y_pos){
                 );
 }
 
+void LCD_delete_player(uint8_t lane){
+	if (lane == 0){
+		lcd_draw_block(37, 75,232,78,LCD_COLOR_YELLOW);
+	} else if (lane == 1){
+		lcd_draw_block(118, 74,232,78,LCD_COLOR_YELLOW);
+	} else if (lane == 2){
+		lcd_draw_block(200, 79,232,78,LCD_COLOR_YELLOW);
+	}
+}
+
 void LCD_update_score(uint16_t score)
 {
 	uint8_t first = score % 10;

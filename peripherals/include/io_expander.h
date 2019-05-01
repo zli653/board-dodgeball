@@ -86,4 +86,5 @@ uint8_t io_expander_read_reg(uint8_t);
 void light_control(uint8_t bitmap);
 uint8_t read_button(void);
 uint8_t read_interrupt(void);
+void light_blink(void);
 #endif

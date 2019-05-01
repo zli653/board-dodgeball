@@ -33,14 +33,13 @@ volatile int Button_flag;
 int Button_real_flag;
 
 uint8_t game_started;
-bool jump;
-bool jumping;
-uint16_t value;
+
 uint16_t player_x;
 uint16_t player_y;
-int player_y_offset;
-int player_y_step;
 uint8_t current_lane;
+
+
+uint16_t touch_x, touch_y;
 int count;
 //*****************************************************************************
 //*****************************************************************************
@@ -62,46 +61,49 @@ void EnableInterrupts(void)
 typedef enum 
 {
   NOT_TOUCHED,
-	NOT_TOUCHED_FINAL,
+	NOT_TOUCHED_FIRST,
+	NOT_TOUCHED_SECOND,
 	IN_TOUCH,
-	TOUCHED_FINAL,
+	TOUCHED_FIRST,
+	TOUCHED_SECOND
 } TOUCH_STATES;
 
 static TOUCH_STATES state = NOT_TOUCHED;
-  
-bool touch_fsm_sw(uint8_t touch_event)
+ 
+bool touch_fsm_sw(uint8_t current_lane)
 {
-	// uint8_t touch_event;
-	// uint16_t touch_x, touch_y;
+	uint16_t touch_event;
+	touch_event = ft6x06_read_td_status();
 	switch (state)
 	{
 		case NOT_TOUCHED:
 		{
-			if(touch_event > 0) {state = TOUCHED_FINAL; }
+			if(touch_event > 0) {state = TOUCHED_FIRST; }
 			else { state = NOT_TOUCHED; }
 		  return false;
-			break;
 		}
-		case TOUCHED_FINAL:
+		case TOUCHED_FIRST:
 		{
-			if(touch_event > 0) {state = IN_TOUCH; return true;}
+			if(touch_event > 0) {state = IN_TOUCH; 
+				touch_x = ft6x06_read_x();
+				touch_y = ft6x06_read_y();
+					// printf("Jump times: %d,%d\n\r", touch_x, touch_y);
+				return true;
+			}
 			else { state = NOT_TOUCHED; }
 		  return false;
-			break;
 		}
-		case NOT_TOUCHED_FINAL:
+		case NOT_TOUCHED_FIRST:
 		{
 			if(touch_event > 0) {state = IN_TOUCH;}
 			else { state = NOT_TOUCHED; }
 		  return false;
-			break;
 		}
 		case IN_TOUCH:
 		{
 			if(touch_event > 0) {state = IN_TOUCH;}
-			else { state = NOT_TOUCHED_FINAL; }
+			else { state = NOT_TOUCHED_FIRST; }
 			return false;
-			break;
 		}
 		default:
 		{
@@ -129,7 +131,7 @@ void TIMER4A_Handler(void)
 	gp_timer->ICR |= TIMER_ICR_TATOCINT;
 	
 	//ALERT_TIMER4_ACC_UPDATE = true;
-	if ( count == 1)
+	if (count == 0)
 	{
 			ALERT_TIMER4_ACC_UPDATE = true;
 			count = 0;
@@ -212,12 +214,10 @@ bool init_hardware(void)
 	Button_old = 0x0f;
 	Button_real_flag = 0x00;
 	game_started = 0;
-	jump = 0;
 	current_lane  = 1;
 	// at the end of enable timer
 	player_x = 120;
 	player_y = PLAYER_Y_BASE;
-	player_y_offset = 0;
   
 	EnableInterrupts();
   return true;
@@ -237,80 +237,76 @@ void GPIOF_Handler(void){
 int 
 main(void)
 { 
+	bool jump;
 	// char msg[80];
-		int jump_count = 0;
+	int jump_count = 0;
+	int8_t accel_flag;
 	uint32_t i;
-	uint8_t touch_event, tick_count;
+	uint8_t tick_count,tick_count_t, jump_seq;
 	bool tick;
-	int16_t accel_x, touch_x, touch_y, highest_score,points;
-	value = 0;
+	int16_t accel_x,  highest_score,points;
 
 	
-		init_hardware();
-	// eeprom print name
+	init_hardware();
 	eeprom_print_info();
 	LCD_map_init();
 	jump = 0;	
-	jumping = false;
+	jump_seq = 0;
 	tick = false;
-	LCD_draw_bar(LEFT_BAR, 1, 50);
-	LCD_draw_bar(RIGHT_BAR, 1, 150);
-	LCD_draw_bar(RIGHT_BAR, 1, 50);
-	LCD_draw_bar(RIGHT_BAR, 2, 50);
-	LCD_draw_bar(LEFT_BAR, 0, 100);
-	LCD_draw_bar(RIGHT_BAR, 0, 50);
-	LCD_draw_bar(LEFT_BAR, 2, 100);
-	lcd_draw_block(40, 60,150,60,LCD_COLOR_BROWN);
+//	LCD_draw_bar(LEFT_BAR, 1, 50);
+//	LCD_draw_bar(RIGHT_BAR, 1, 150);
+//	LCD_draw_bar(RIGHT_BAR, 1, 50);
+//	LCD_draw_bar(RIGHT_BAR, 2, 50);
+//	LCD_draw_bar(LEFT_BAR, 0, 100);
+//	LCD_draw_bar(RIGHT_BAR, 0, 50);
+//	LCD_draw_bar(LEFT_BAR, 2, 100);
+	
 	eeprom_write_score(999);
+	
 	while(1){
-
-		// Read input
+		
+		// 1s timer
 		if(ALERT_TIMER1_LED_UPDATE) {
-			// LED_blind();
+			light_blink();
 			if (game_started){
 				points++;
 			}
 			ALERT_TIMER1_LED_UPDATE = false;
     }
+		
+		// 8ms timer
     if(ALERT_TIMER4_ACC_UPDATE) {
-			// put_string("SEC :James");
-			// check accelerator();
-			accel_x = accel_read_x();	
-			touch_event = ft6x06_read_td_status();
-			jump = touch_fsm_sw(touch_event);
-			// printf("ACCEL X: %d\n",accel_x);
-			if (accel_x > 8000) {
-				player_x -= 2;
-			}	
-			else if (accel_x > 2000) {
-				player_x--;
+			// if game has started
+			if (game_started == 1){
+				accel_x = accel_read_x();	
+				jump = touch_fsm_sw(current_lane);
+				// printf("ACCEL X: %d\n",accel_x);
+				if (accel_x > 8000) {
+					accel_flag = -3;
+				}	
+				else if (accel_x > 3000) {
+					accel_flag = -2;
+				}
+				else if (accel_x > 1300) {
+					accel_flag = -1;
+				}
+				else if (accel_x < -8000) {
+					accel_flag = 3;
+				}
+				else if (accel_x < -3000) {
+					accel_flag = 2;
+				}
+				else if (accel_x > 1300) {
+					accel_flag = 1;
+				} else {
+					accel_flag = 0;
+				}
 			}
-			else if (accel_x < -8000) {
-				player_x += 2;
-			}
-			else if (accel_x < -2000) {
-				player_x++;
-			}	
 			tick = true;
 			ALERT_TIMER4_ACC_UPDATE = false;
     }
-		
-		touch_event = ft6x06_read_td_status();
-//		if (touch_event == 1){
-//			touch_x = ft6x06_read_x();
-//			if (current_lane == 0){
-//				if (touch_x > 100) touch_event = 0; 
-//			}else if (current_lane == 1) {
-//				if (touch_x > 180 || touch_x < 60 ) touch_event = 0; 
-//			}else {
-//				if (touch_x < 160) touch_event = 0; 
-//			}
-//		}
-		// jump = touch_fsm_sw(touch_event);
-		// if (!jumping) {jump = touch_fsm_sw(touch_event);}
-			
 
-		
+		// Handle button interrupt
 		if (Button_interrupted == 1){
 			if (Button_flag == 0){
 				Button_real_flag |= 0x10;
@@ -323,14 +319,16 @@ main(void)
 		
 		
 		// react to input
-			// No matter game started or not
-			// if SW2 is pressed, write name
+		// No matter game started or not
+		// if SW2 is pressed, write name
 		if ((Button_real_flag & BUTTON_SW2) != 0){
 			eeprom_write_info();
 			Button_real_flag &= BUTTON_SW2;
 			
 		}
 		
+		
+		// If game has not started
 		if (game_started == 0){
 			if ((Button_real_flag & BUTTON_DOWN) != 0){
 				game_started = 1;
@@ -340,40 +338,131 @@ main(void)
 				Button_real_flag &= ~BUTTON_DOWN;
 			}
 		} 
+		
+		// If game has started
 		if (game_started ==1){
+			// Check jump
+			if (jump == 1){
+				if (touch_y > 300 || touch_y < 220) jump = 0;
+				if (current_lane == 0){
+					if (touch_x > 100) jump = 0; 
+				}else if (current_lane == 1) {
+					if (touch_x > 180 || touch_x < 60 ) jump = 0; 
+				}else {
+					if (touch_x < 160) jump = 0; 
+				}
+				printf("after: %d, %d, %d\n\r", jump,touch_x,touch_y);
+			}
+			if (jump == 1) {
+				if (jump_seq == 0){
+					jump_seq = 1;
+				}
+				jump = 0;
+			}
 			
+			// check change lanes
+			if ((Button_real_flag & BUTTON_LEFT) != 0){
+				if (current_lane >= 1){
+					LCD_delete_player(current_lane);
+					current_lane = current_lane - 1;
+					player_x -= 80;
+				}
+				Button_real_flag &= ~BUTTON_LEFT;
+			}
 			
+			if ((Button_real_flag & BUTTON_RIGHT) != 0){
+				if (current_lane <= 1){
+					LCD_delete_player(current_lane);
+					current_lane = current_lane + 1;
+					player_x += 80;
+				}
+				Button_real_flag &= ~BUTTON_RIGHT;
+			}
+			
+			// update score
 			LCD_update_score(points);
+			
+			// undate image based on each tick
 			if (tick){
+				
 				tick_count = (tick_count +1)%2;
+				tick_count_t = (tick_count_t +1)%3;
 				if (tick_count == 0){
+					if (jump_seq == 5){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -7;
+					}else if (jump_seq == 7){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -7;
+					}
+					
+					if (accel_flag == 1 || accel_flag == -1){
+						player_x --;
+					}
 					// if update each 2 tick
 				}
+				
+				
+				
+				if (tick_count_t == 0){
+					if (jump_seq == 6){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE - 8;
+					}
+				}
+				
+				if (accel_flag == 2 ||accel_flag == 3 ){
+						player_x = player_x +accel_flag -1;
+				}
+				if (accel_flag == -2|| accel_flag == -3){
+						player_x = player_x +accel_flag +1;
+				}
+				if (jump_seq == 1){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -2;
+				}else if (jump_seq == 2){
+					jump_seq++;
+					player_y = PLAYER_Y_BASE -4;
+				}else if (jump_seq == 3){
+					jump_seq++;
+					player_y = PLAYER_Y_BASE -5;
+				}else if (jump_seq == 4){
+					jump_seq++;
+					player_y = PLAYER_Y_BASE -6;
+				}else if (jump_seq == 8){
+					jump_seq++;
+					player_y = PLAYER_Y_BASE -6;
+				}else if (jump_seq == 9){
+					jump_seq ++;
+					player_y = PLAYER_Y_BASE -5;
+				}else if (jump_seq == 10){
+					jump_seq ++;
+					player_y = PLAYER_Y_BASE -4;
+				}else if (jump_seq == 11){
+					jump_seq ++;
+					player_y = PLAYER_Y_BASE -2;
+				}else if (jump_seq == 12){
+					jump_seq = 0;
+					player_y = PLAYER_Y_BASE;
+				}
+				
 				// If a thing is update each tick
-				if (jump != 0){
-					jump_count++;
-					printf("Jump times: %d\n\r", jump_count);
-					jump = 0;
-					player_y_step = 4;
-					player_y_offset = 0;
-					jumping = true;
-				}
-				if (player_y_step > -5){
-					player_y_offset +=  player_y_step;
-					player_y = PLAYER_Y_BASE - player_y_offset;
-					player_y_step --;
-				} else {
-					jumping = false;
-				}
+				
 			}
+			
+			
+			
 		}
 			
+		// Ready to next while loop
 		LCD_draw_player(player_x, player_y);
 		
 		
-		// for(i = 0; i < 100000; i++){}
+				
 		tick = false;
-	
+		
+		
+		
+		
 	};
-	// Reach infinite loop after the game is over.
 }
