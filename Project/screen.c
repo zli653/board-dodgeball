@@ -192,15 +192,6 @@ bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t playe
 			if(lane == 2){
 				x_pos += 2;
 			}
-			lcd_draw_image( 
-									x_pos,                 // X Pos
-                  long_BarWidthPixels,   // Image Horizontal Width
-                  y_pos,                 // Y Pos
-                  long_BarHeightPixels,  // Image Vertical Height
-                  long_BarBitmaps,       // Image
-                  forColor,      // Foreground Color
-                  LCD_COLOR_YELLOW     // Background Color
-                );
 			// x_pos_left = x_pos - long_BarWidthPixels/2;
 			// x_pos_right = x_pos + long_BarWidthPixels/2;
 			y_pos_bottom = y_pos - long_BarWidthPixels/2;
