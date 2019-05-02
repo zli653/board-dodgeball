@@ -9,7 +9,7 @@ bool io_expander_init(void){
 
 	
 	// the part above should be written to one file
-	//TODO: gpio B
+	// gpio B
 	uint8_t temp;
 	// the part above should be written to one file
 	io_expander_write_reg(MCP23017_IODIRA_R,0x00);

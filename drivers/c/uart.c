@@ -304,7 +304,6 @@ bool uart_init(uint32_t uart_base, bool enable_rx_irq, bool enable_tx_irq)
 		if( enable_rx_irq)
 		{
 			// <ADD CODE> Turn on the UART Interrupts for Rx, and Rx Timeout
-		      //TODO: configure interrupt levels?
 			uart->IFLS = UART_IFLS_RX7_8;	 
 		    uart->IM |= (UART_IM_RXIM | UART_IM_RTIM);
 		}

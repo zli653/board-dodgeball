@@ -217,16 +217,16 @@ bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t playe
 			if(lane == 2 && type == RIGHT_BAR){
 				x_pos += 5;
 			}
-			x_pos_left = x_pos - short_BarWidthPixels/2+2;
-			x_pos_right = x_pos + short_BarWidthPixels/2-2;
+			x_pos_left = x_pos - short_BarWidthPixels/2+3;
+			x_pos_right = x_pos + short_BarWidthPixels/2-3;
 			y_pos_bottom = y_pos + short_BarHeightPixels/2;
 			// y_pos_top = y_pos - short_BarHeightPixels/2;
 			if (type == UNUSED) {
 				return false;
 			}
 			if (y_pos_bottom >= player_y - 25) {
-				return (x_pos_left <= player_x_left && player_x_left <= x_pos_right) 
-					|| (x_pos_left <= player_x_right && player_x_right <= x_pos_right);
+				return (player_x_left <= x_pos_left && x_pos_left <= player_x_right) 
+					|| (player_x_left <= x_pos_right && x_pos_right <= player_x_right);
 			}
 		}		
 		

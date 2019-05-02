@@ -111,10 +111,8 @@ typedef enum
 {
   NOT_TOUCHED,
 	NOT_TOUCHED_FIRST,
-	NOT_TOUCHED_SECOND,
 	IN_TOUCH,
 	TOUCHED_FIRST,
-	TOUCHED_SECOND
 } TOUCH_STATES;
 
 static TOUCH_STATES state = NOT_TOUCHED;
@@ -195,8 +193,6 @@ bool init_gpio(){
 	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOB_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOC_BASE) == false)   return false;
-	if(gpio_enable_port(GPIOD_BASE) == false)   return false;
-	if(gpio_enable_port(GPIOE_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOF_BASE) == false)   return false;
 	return true;
 }
@@ -226,16 +222,16 @@ bool init_i2c() {
 //*****************************************************************************
 bool init_hardware(void)
 {
-	// TODO: initial all hardware here
+	// initial all hardware here
 	DisableInterrupts();
 	init_gpio();
 	
-	init_serial_debug(true, true);
+	if(!init_serial_debug(true, true)) return false;
 	if(!init_i2c()) return false;
 
 	lcd_config_screen();
 	lcd_clear_screen(LCD_COLOR_BLACK);
-	io_expander_init();
+	if(!io_expander_init()) return false;
 	
 	accel_initialize();
 	
@@ -277,7 +273,6 @@ void GPIOF_Handler(void){
 	Button_value = read_button();
 	Button_interrupted =	1;
 	GPIOF->ICR |= 0xff;
-	
 }
 
 	
@@ -288,13 +283,12 @@ main(void)
 { 
 	bars *game_bar;
 	bool jump;
-	// char msg[80];
 	int jump_count = 0;
 	int8_t accel_flag;
 	uint32_t i,j;
 	uint8_t tick_count,tick_count_t, jump_seq,num_bars_exist,gen_bar_flag,gen_bar_count,game_over_flag;
 	bool tick;
-	int16_t accel_x,  highest_score,points;
+	int16_t accel_x, highest_score,points;
 
 	
 	init_hardware();
@@ -623,7 +617,25 @@ main(void)
 			if (points > highest_score) {
 				eeprom_write_score(points);
 			}
-
+			
+			// clear and reprint game start message
+			lcd_set_pos(0,COLS - 1, 293,307);
+			for (i=293;i< 307 ;i++)
+			{
+						for(j= 0; j < COLS; j++)
+						{
+								lcd_write_data_u16(LCD_COLOR_BLACK);
+						}
+			}
+			lcd_draw_image( 
+									120,                 // X Pos
+                  start_gameWidthPixels,   // Image Horizontal Width
+                  300,                 // Y Pos
+                  start_gameHeightPixels,  // Image Vertical Height
+                  start_gameBitmaps,       // Image
+                  LCD_COLOR_WHITE,      // Foreground Color
+                  LCD_COLOR_BLACK     // Background Color
+                );
 			for(i = 0; i < 15; i++){
 				game_bar[i].type = UNUSED;
 			}

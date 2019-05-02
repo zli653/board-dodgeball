@@ -7,8 +7,7 @@ void eeprom_write_info(void)
 	uint16_t addr_start;
 	unsigned char student1[80] = "Zeming Li\n";
 	unsigned char student2[80] = "Yan Xiao\n";
-	// TODO: change team number
-	unsigned char team_num[80] = "20\n";
+	unsigned char team_num[80] = "32\n";
 
 	addr_start = ADDR_START;
 	for(addr = addr_start; addr <(addr_start + FIELD_BYTES); addr++)
