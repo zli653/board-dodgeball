@@ -194,8 +194,8 @@ bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t playe
 			}
 			// x_pos_left = x_pos - long_BarWidthPixels/2;
 			// x_pos_right = x_pos + long_BarWidthPixels/2;
-			y_pos_bottom = y_pos - long_BarWidthPixels/2;
-			// y_pos_top = y_pos + long_BarWidthPixels/2;
+			y_pos_bottom = y_pos + long_BarWidthPixels/2;
+			// y_pos_top = y_pos - long_BarWidthPixels/2;
 			if (y_pos_bottom >= player_y - 28) {
 				if (lane == 0 && player_x >= 18 && player_x <= 56) {
 				 	return true; 
@@ -219,8 +219,8 @@ bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t playe
 			}
 			// x_pos_left = x_pos - short_BarWidthPixels/2;
 			// x_pos_right = x_pos + short_BarWidthPixels/2;
-			y_pos_bottom = y_pos - short_BarWidthPixels/2;
-			// y_pos_top = y_pos + short_BarWidthPixels/2;
+			y_pos_bottom = y_pos + short_BarWidthPixels/2;
+			// y_pos_top = y_pos - short_BarWidthPixels/2;
 			if (type == UNUSED) {
 				return false;
 			}
