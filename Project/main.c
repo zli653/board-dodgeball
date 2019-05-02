@@ -96,7 +96,7 @@ void LCD_clear_bar(uint8_t lane, bar_type types){
 			if (types == POINTS_BAR){
 				y_pos = POINTS_BUTTON;
 			} else {
-				y_pos = BAR_BOTTON;
+				y_pos = BAR_BUTTON;
 			}
 			lcd_draw_block( 
 									x_pos,                 // X Pos
@@ -309,7 +309,7 @@ main(void)
 	gen_bar_count = 0;
 	//LCD_draw_player(222, player_y);
 	// LCD_draw_bar(LONG_BAR, 1, 202);
-	// eeprom_write_score(999);
+	eeprom_write_score(0);
 	game_bar = malloc(sizeof(bars)*15);
 	for(i = 0; i < 15; i++){
 		game_bar[i].type = UNUSED;
@@ -511,7 +511,7 @@ main(void)
 					if (points <= 30){
 						for (i = 0; i < 15; i++){
 							if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-							if (game_bar[i].y_pos >= BAR_BOTTON){
+							if (game_bar[i].y_pos >= BAR_BUTTON){
 								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 								game_bar[i].type = UNUSED;
 								
@@ -580,7 +580,7 @@ main(void)
 				if (points >30){
 					for (i = 0; i < 15; i++){
 						if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-							if (game_bar[i].y_pos >= BAR_BOTTON){
+							if (game_bar[i].y_pos >= BAR_BUTTON){
 								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 								game_bar[i].type = UNUSED;
 								
@@ -620,7 +620,9 @@ main(void)
 		}
 		
 		if (game_over_flag == 1){
-			eeprom_write_score(points);
+			if (points > highest_score) {
+				eeprom_write_score(points);
+			}
 
 			for(i = 0; i < 15; i++){
 				game_bar[i].type = UNUSED;
