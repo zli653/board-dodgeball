@@ -57,6 +57,31 @@ void EnableInterrupts(void)
 		CPSIE  I
 	}
 }
+void boundary_check() {
+	 int play_x_left = player_x - playerWidthPixels/2;
+   	 int play_x_right = player_x + playerWidthPixels/2;
+	if (play_x_left/2 < 0) {
+			player_x = playerWidthPixels/2; 
+		}
+		// 81
+		else if (75 <= play_x_left && play_x_left <= 81) {
+			player_x = 81+playerWidthPixels/2; 
+		}	
+		// 165
+		else if (159 <= play_x_left && play_x_left <= 165) {
+			player_x = 165+playerWidthPixels/2; 
+		}	
+		
+		if (play_x_right > 240) {
+			player_x = 240-playerWidthPixels/2;
+		}
+		else if (155 <= play_x_right && play_x_right <= 165) {
+			player_x = 155-playerWidthPixels/2; 
+		}
+		else if (75 <= play_x_right && play_x_right <= 81) {
+			player_x = 75-playerWidthPixels/2; 
+		}
+}
 
 typedef enum 
 {
@@ -487,6 +512,7 @@ main(void)
 		}
 			
 		// Ready to next while loop
+		boundary_check();
 		LCD_draw_player(player_x, player_y);
 		
 		

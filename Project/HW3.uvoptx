@@ -147,34 +147,226 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>104</LineNumber>
+          <LineNumber>311</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>3618</Address>
+          <Address>1462</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\peripherals\c\ft6x06.c</Filename>
+          <Filename>.\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\ece353_base_project\../peripherals/c/ft6x06.c\104</Expression>
+          <Expression>\\ece353_base_project\main.c\311</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>111</LineNumber>
+          <LineNumber>75</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>3634</Address>
+          <Address>9934</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\peripherals\c\ft6x06.c</Filename>
+          <Filename>.\ep.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\ece353_base_project\../peripherals/c/ft6x06.c\111</Expression>
+          <Expression>\\ece353_base_project\ep.c\75</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>76</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>9938</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\ep.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\ece353_base_project\ep.c\76</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>367</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>1842</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\ece353_base_project\main.c\367</Expression>
+        </Bp>
+        <Bp>
+          <Number>4</Number>
+          <Type>0</Type>
+          <LineNumber>360</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>1788</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\ece353_base_project\main.c\360</Expression>
+        </Bp>
+        <Bp>
+          <Number>5</Number>
+          <Type>0</Type>
+          <LineNumber>309</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>6</Number>
+          <Type>0</Type>
+          <LineNumber>358</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>7</Number>
+          <Type>0</Type>
+          <LineNumber>365</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>8</Number>
+          <Type>0</Type>
+          <LineNumber>334</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>9</Number>
+          <Type>0</Type>
+          <LineNumber>336</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>10</Number>
+          <Type>0</Type>
+          <LineNumber>383</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>11</Number>
+          <Type>0</Type>
+          <LineNumber>385</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>12</Number>
+          <Type>0</Type>
+          <LineNumber>390</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>13</Number>
+          <Type>0</Type>
+          <LineNumber>392</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
