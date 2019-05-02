@@ -178,3 +178,74 @@ void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos){
 		
 
 }
+
+bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t player_x, uint16_t player_y){
+		uint8_t width, height;
+		uint16_t x_pos, forColor;
+	  uint16_t x_pos_left, x_pos_right;
+	  uint16_t y_pos_bottom, y_pos_top;
+	int player_x_left = player_x - playerWidthPixels/2;
+   	int player_x_right = player_x + playerWidthPixels/2;
+// 18 56 100 136 180 222
+	  if (type == LONG_BAR || type == POINTS_BAR){
+			x_pos = 38 + lane*80;
+			if(lane == 2){
+				x_pos += 2;
+			}
+			lcd_draw_image( 
+									x_pos,                 // X Pos
+                  long_BarWidthPixels,   // Image Horizontal Width
+                  y_pos,                 // Y Pos
+                  long_BarHeightPixels,  // Image Vertical Height
+                  long_BarBitmaps,       // Image
+                  forColor,      // Foreground Color
+                  LCD_COLOR_YELLOW     // Background Color
+                );
+			// x_pos_left = x_pos - long_BarWidthPixels/2;
+			// x_pos_right = x_pos + long_BarWidthPixels/2;
+			y_pos_bottom = y_pos - long_BarWidthPixels/2;
+			// y_pos_top = y_pos + long_BarWidthPixels/2;
+			if (y_pos_bottom >= player_y - 28) {
+				if (lane == 0 && player_x >= 18 && player_x <= 56) {
+				 	return true; 
+				}	
+				else if (lane == 1 && player_x >= 100 && player_x <= 136) {
+					return true;
+				}
+				else if (lane == 2 && player_x >= 180 && player_x <= 222) {
+					return true;
+				}
+			}
+		} 
+		else {
+			if (type == LEFT_BAR){
+				x_pos = 18 + lane * 80;
+			} else {
+				x_pos = 58 + lane * 80;
+			}
+			if(lane == 2 && type == RIGHT_BAR){
+				x_pos += 5;
+			}
+			// x_pos_left = x_pos - short_BarWidthPixels/2;
+			// x_pos_right = x_pos + short_BarWidthPixels/2;
+			y_pos_bottom = y_pos - short_BarWidthPixels/2;
+			// y_pos_top = y_pos + short_BarWidthPixels/2;
+			if (type == UNUSED) {
+				return false;
+			}
+			if (y_pos_bottom >= player_y - 28) {
+				if (lane == 0 && player_x >= 18 && player_x <= 56) {
+				 	return (player_x_left <= x_pos && x_pos_right >= x_pos); 
+				}	
+				else if (lane == 1 && player_x >= 100 && player_x <= 136) {
+					return (player_x_left <= x_pos && x_pos_right >= x_pos); 
+				}
+				else if (lane == 2 && player_x >= 180 && player_x <= 222) {
+					return (player_x_left <= x_pos && x_pos_right >= x_pos); 
+				}
+			}
+		}		
+		
+		return false;	
+			
+}

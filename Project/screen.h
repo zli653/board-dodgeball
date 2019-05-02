@@ -32,4 +32,5 @@ void LCD_update_score(uint16_t score);
 void LCD_score_init(uint16_t highest);
 void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos);
 void LCD_delete_player(uint8_t lane);
+bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t player_x, uint16_t player_y);
 #endif
