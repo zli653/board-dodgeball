@@ -274,7 +274,8 @@ main(void)
 	uint8_t wireless_lane = 3;
 	wireless_com_status_t wireless_status;
 	uint32_t wireless_data;
-	bool master_slave;
+	// true for slave (one player)
+	bool master_slave = true; // Change this for master device
 
 	uint8_t wireless_master_flag = 0;
 	uint8_t wireless_slave_flag = 0;
@@ -296,7 +297,6 @@ main(void)
 	
 	Button_old = 0x0f;
 	Button_real_flag = 0x00;
-	// eeprom_write_score(0);
 
 	if (!init_hardware()){
 		while(1){};
@@ -304,7 +304,6 @@ main(void)
 	
 	eeprom_print_info();
 	LCD_map_init();
-	master_slave = false; ///////////////////////////////////////Need to change this
 	if (master_slave){
 			spi_select(NORDIC);
 			wireless_configure_device(slaveID, masterID);
@@ -312,13 +311,13 @@ main(void)
 			wireless_flag = 1;
 			Button_real_flag &= ~BUTTON_LEFT;
 		}
-		if (!master_slave){
-			spi_select(NORDIC);
-			wireless_configure_device(masterID, slaveID);
-			wireless_flag = 1;
-			wireless_master_flag = 1;
-			Button_real_flag &= ~BUTTON_RIGHT;
-		}
+	if (!master_slave){
+		spi_select(NORDIC);
+		wireless_configure_device(masterID, slaveID);
+		wireless_flag = 1;
+		wireless_master_flag = 1;
+		Button_real_flag &= ~BUTTON_RIGHT;
+	}
 	
 	while(1){
 		//// Gather input area
@@ -410,19 +409,21 @@ main(void)
 			}
 		}
 		
-		//// react to input AREA
+		// restart the game
 		if (game_over_count == 1){
 			lcd_clear_screen(LCD_COLOR_BLACK);
 			LCD_map_init();
 			game_started = 0;
 			game_over_count = 0;
 		}
-		/// If game has not started
+		
+		// If game has not started
 		if (game_started == 0 && game_over_count == 0){
 			if ((Button_real_flag & BUTTON_SW2) != 0){
 				eeprom_write_info();
 				Button_real_flag &= BUTTON_SW2;
 			}
+			// main player restart game if down button is pressed
 			if (!(wireless_flag == 1 && wireless_master_flag == 1)){
 				if ((Button_real_flag & BUTTON_DOWN) != 0){
 					for(i = 0; i < 15; i++){
@@ -442,6 +443,7 @@ main(void)
 		
 		} 
 		
+		// main player get sent data
 		if (wireless_flag == 1 && wireless_slave_flag == 1){
 				spi_select(NORDIC);
 				wireless_status = wireless_get_32(false, &wireless_data);
@@ -454,7 +456,6 @@ main(void)
 		
 		// If game has started
 		if (game_started ==1 && game_over_count == 0 ){
-				
 				// Check jump
 				if (jump == 1){
 					if (touch_y > 300 || touch_y < 220) jump = 0;
@@ -474,24 +475,27 @@ main(void)
 					jump = 0; // clearing jump flag
 				}
 				
+				// generate bar if get new data from wireless 
 				if (wireless_lane != 3){
 					for (i = 0; i <= 15; i++){
-							if (i == 15) break;
-							if (game_bar[i].type == UNUSED) break;
-						}
-						if (i != 15){
-							game_bar[i].type = rand() % 2+2;
-							game_bar[i].y_pos = BAR_TOP;
-							game_bar[i].lanes = wireless_lane;
-							game_bar[i].points_hit =0;
-						}
-						wireless_lane = 3;
+						if (i == 15) break;
+						if (game_bar[i].type == UNUSED) break;
+					}
+					if (i != 15){
+						game_bar[i].type = rand() % 2+2;
+						game_bar[i].y_pos = BAR_TOP;
+						game_bar[i].lanes = wireless_lane;
+						game_bar[i].points_hit =0;
+					}
+					// clear data
+					wireless_lane = 3;
 				}
 				
 				
-				// generate bars each tick
+				// generate bars each tick with different difficulties
 				if (gen_bar_flag == 1){
 					gen_bar_flag = 0; // clearing gen bar flag
+					// highest speed
 					if (points >= 100){
 						j = rand() % 3;
 						for (i = 0; i <= 15; i++){
@@ -514,8 +518,9 @@ main(void)
 							game_bar[i].lanes = (j+2)%3;
 							game_bar[i].points_hit =0;
 						}
-						
-					}else if (points >= 60){
+					}
+					// 60 <= points < 100
+					else if (points >= 60){
 						for (i = 0; i <= 15; i++){
 							if (i == 15) break;
 							if (game_bar[i].type == UNUSED) break;
@@ -539,8 +544,7 @@ main(void)
 								game_bar[i].lanes = rand() % 3;
 								game_bar[i].points_hit =0;
 							}
-						}
-					
+						}		
 					}
 				}
 				
@@ -563,18 +567,13 @@ main(void)
 
 				// undate image based on each tick. Make sure each the image update in each tick not constantly
 				if (tick){
-					
 					tick_count = (tick_count +1)%2; // movement update once per 2 tick
 					tick_count_t = (tick_count_t +1)%3; // movement update once per 3 tick
 					
 					// movement update once per 2 tick
-					if (tick_count == 0){
-						
+					if (tick_count == 0){	
 						// update jump animation
-						if (jump_seq == 5){
-							jump_seq++;
-							player_y = PLAYER_Y_BASE -7;
-						}else if (jump_seq == 7){
+						if (jump_seq == 5 || jump_seq == 7){
 							jump_seq++;
 							player_y = PLAYER_Y_BASE -7;
 						}
@@ -588,13 +587,12 @@ main(void)
 						if (points <= 30){
 							for (i = 0; i < 15; i++){
 								if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-								if (game_bar[i].y_pos >= BAR_BOTTOM){
-									LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
-									game_bar[i].type = UNUSED;
-									
-								}
-								game_bar[i].y_pos += 1;
-								}else	if (game_bar[i].type == POINTS_BAR){
+									if (game_bar[i].y_pos >= BAR_BOTTOM){
+										LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
+										game_bar[i].type = UNUSED;
+									}
+									game_bar[i].y_pos += 1;
+								} else if (game_bar[i].type == POINTS_BAR){
 									if (game_bar[i].y_pos >= POINTS_BOTTOM){
 										LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 										game_bar[i].type = UNUSED;
@@ -606,7 +604,6 @@ main(void)
 								}
 							}
 						}		
-						
 					}
 					
 					
@@ -679,6 +676,7 @@ main(void)
 							}
 						}
 					}
+					
 					// update score
 					LCD_update_score(points);
 					
@@ -720,9 +718,7 @@ main(void)
 		}
 		
 		// clear all flags, make sure it is cleaned
-		
 		Button_real_flag = 0;
-			
 		tick = false;
 		jump = false;
 		accel_flag = 0;
