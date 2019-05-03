@@ -101,18 +101,18 @@ uint8_t ft6x06_read_td_status(void)
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	status = ft6x06_read_data(FT6X06_I2C_BASE, &data);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
-	if (data < 0 || data > 2) {
-		return -1;
+	if (data > 2) {
+		return 0;
 	}	
 	return data;
 } 
@@ -135,34 +135,33 @@ uint16_t ft6x06_read_x(void)
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	status = ft6x06_read_data(FT6X06_I2C_BASE, &data_h);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 
 	status = ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_P1_XL_R);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	status = ft6x06_read_data(FT6X06_I2C_BASE, &data_l);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	 //data = (data_h << 8) + data_l;
 	 data = data_l;
-	 if (data < 0) return 0; 
-	 else if	(data > 239) return 239;
+	 if	(data > 239) return 239;
 	 else return (239 - data);
 	
 } 
@@ -184,33 +183,32 @@ uint16_t ft6x06_read_y(void)
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	status = ft6x06_read_data(FT6X06_I2C_BASE, &data_h);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 
 	status = ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_P1_YL_R);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	status = ft6x06_read_data(FT6X06_I2C_BASE, &data_l);
 	
 	if ( status != I2C_OK )
   {
-    return -1;
+    return 0;
   }
 	
 	data = (data_h << 8) + data_l;
-	if (data < 0) return 0; 
-	else if	(data > 319) return 319;
+	if	(data > 319) return 319;
 	else return (319-data);
 } 
 

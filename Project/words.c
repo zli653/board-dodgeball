@@ -1,3 +1,6 @@
+// Student 1: Yan Xiao
+// Student 2: Zeming Li
+// Team number: 32
 #include "words.h"
 
 

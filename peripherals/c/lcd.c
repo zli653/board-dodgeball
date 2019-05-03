@@ -230,8 +230,6 @@ void lcd_draw_block(
 )
 {
   uint16_t i,j;
-  uint8_t data;
-  uint16_t byte_index;
   uint16_t bytes_per_row;
   uint16_t x0;
   uint16_t x1;

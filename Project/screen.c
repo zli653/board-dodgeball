@@ -1,3 +1,6 @@
+// Student 1: Yan Xiao
+// Student 2: Zeming Li
+// Team number: 32
 #include "screen.h"
 
 void LCD_map_init(void){
@@ -133,7 +136,6 @@ void LCD_score_init(uint16_t highest){
 }
 
 void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos){
-		uint8_t width, height;
 		uint16_t x_pos, forColor;
 		if (type == LONG_BAR || type == POINTS_BAR){
 			x_pos = 38 + lane*80;
@@ -180,10 +182,10 @@ void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos){
 }
 
 bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t player_x, uint16_t player_y){
-		uint8_t width, height;
-		uint16_t x_pos, forColor;
+
+		uint16_t x_pos;
 	  uint16_t x_pos_left, x_pos_right;
-	  uint16_t y_pos_bottom, y_pos_top;
+	  uint16_t y_pos_bottom;
 	int player_x_left = player_x - playerWidthPixels/2;
    	int player_x_right = player_x + playerWidthPixels/2;
 // 18 56 100 136 180 222

@@ -1,3 +1,6 @@
+// Student 1: Yan Xiao
+// Student 2: Zeming Li
+// Team number: 32
 #ifndef __SCREEN_H__
 #define __SCREEN_H__
 

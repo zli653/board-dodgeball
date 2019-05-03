@@ -1,26 +1,10 @@
-// Copyright (c) 2015-18, Joe Krachey
-// All rights reserved.
-//
-// Redistribution and use in source or binary form, with or without modification, 
-// are permitted provided that the following conditions are met:
-//
-// 1. Redistributions in source form must reproduce the above copyright 
-//    notice, this list of conditions and the following disclaimer in 
-//    the documentation and/or other materials provided with the distribution.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
-// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
-// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
-// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
-// EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Student 1: Yan Xiao
+// Student 2: Zeming Li
+// Team number: 32
+
 
 #include "main.h"
+
 #define SEC_ONE     50000000
 volatile bool ALERT_TIMER1_LED_UPDATE;
 #define MSEC_EIGHT     50000
@@ -57,7 +41,8 @@ void EnableInterrupts(void)
 	}
 }
 
-
+// This helper function is used to make sure the player is in the lane,
+// if not, move the player back
 void boundary_check(uint8_t lane) {
 		if (lane == 0){
 			if (player_x < 18) {
@@ -83,7 +68,6 @@ void boundary_check(uint8_t lane) {
 				player_x = 222; 
 			}	
 		}
-		// 81
 }
 
 
@@ -91,7 +75,7 @@ void boundary_check(uint8_t lane) {
 
 
 static TOUCH_STATES state = NOT_TOUCHED;
- 
+// This function is a FSM to reduce the posibility of wrong input
 bool touch_fsm_sw(uint8_t current_lane)
 {
 	uint16_t touch_event;
@@ -130,10 +114,10 @@ bool touch_fsm_sw(uint8_t current_lane)
 		{
 			while(1){};
 		}
-		// return false;
 	}
 }
 
+// This is will step up timer flag and clear interrupt
 void TIMER1A_Handler(void)
 {
 	TIMER0_Type *gp_timer = (TIMER0_Type *)TIMER1_BASE;
@@ -143,9 +127,9 @@ void TIMER1A_Handler(void)
 	ALERT_TIMER1_LED_UPDATE = true;
 }
 
+// This is will step up timer flag and clear interrupt
 void TIMER4A_Handler(void)
 {
-	  static int count = 0;
 
 	TIMER0_Type *gp_timer = (TIMER0_Type *)TIMER4_BASE;
 	// acknowledges (clears) a Timer A timeout
@@ -156,6 +140,7 @@ void TIMER4A_Handler(void)
 
 }	
 
+// init all gpio ports to prevent double init
 bool init_gpio(){
 	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOB_BASE) == false)   return false;
@@ -165,6 +150,7 @@ bool init_gpio(){
 	return true;
 }
 
+// init i2c interface to all i2c devices
 bool init_i2c() {
 
 	// Configure SCL 
@@ -203,19 +189,10 @@ bool init_hardware(void)
 	
 	accel_initialize();
 	
-  // inside initalize hardware
-  // Initialize the TIMER1 to be a 
-  //      32-bit
-  //      Periodic
-  //      count up
-  //      generate interrupts 
+
   gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, true, true);
 	gp_timer_enable(TIMER1_BASE, SEC_ONE);
-  // Initialize the TIMER4A to be a 
-  //      16-bit
-  //      peridoc
-  //      count down
-  //      with interrupts
+
   gp_timer_config_16(TIMER4_BASE, TIMER_TAMR_TAMR_PERIOD, false, true, 7); 
   gp_timer_enable(TIMER4_BASE, MSEC_EIGHT);
 
@@ -275,7 +252,7 @@ main(void)
 	wireless_com_status_t wireless_status;
 	uint32_t wireless_data;
 	// true for slave (one player)
-	bool master_slave = true; // Change this for master device
+	bool master_slave = true; // Change this for master device true of player, false for others
 
 	uint8_t wireless_master_flag = 0;
 	uint8_t wireless_slave_flag = 0;
@@ -309,14 +286,12 @@ main(void)
 			wireless_configure_device(slaveID, masterID);
 			wireless_slave_flag = 1;
 			wireless_flag = 1;
-			Button_real_flag &= ~BUTTON_LEFT;
 		}
 	if (!master_slave){
 		spi_select(NORDIC);
 		wireless_configure_device(masterID, slaveID);
 		wireless_flag = 1;
 		wireless_master_flag = 1;
-		Button_real_flag &= ~BUTTON_RIGHT;
 	}
 	
 	while(1){
@@ -381,7 +356,7 @@ main(void)
 			Button_interrupted = 0;
 		}
 		
-		
+		// if this is master, send the button information to slave
 		if (wireless_flag == 1 && wireless_master_flag == 1){
 			if ((Button_real_flag & BUTTON_LEFT) != 0){
 				spi_select(NORDIC);
@@ -409,7 +384,7 @@ main(void)
 			}
 		}
 		
-		// restart the game
+		// restart the game if game over
 		if (game_over_count == 1){
 			lcd_clear_screen(LCD_COLOR_BLACK);
 			LCD_map_init();
