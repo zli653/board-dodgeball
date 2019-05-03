@@ -45,7 +45,7 @@
 #include "ft6x06.h"
 #include "screen.h"
 #include "ep.h"
-// #include "team_info.h"
+#include "wireless.h"
 
 #define BUTTON_UP		0x1
 #define BUTTON_DOWN 0x2

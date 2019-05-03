@@ -36,6 +36,8 @@ uint16_t player_x;
 uint16_t player_y;
 uint8_t current_lane;
 
+uint8_t masterID[] = {4,9,7,2,4};
+uint8_t slaveID[] = {8,9,6,2,7};
 
 uint16_t touch_x, touch_y;
 //*****************************************************************************
@@ -268,6 +270,15 @@ main(void)
 	uint8_t game_over_flag;
 	uint8_t game_over_count;
 	
+	uint8_t wireless_flag;
+	uint8_t wireless_lane = 3;
+	wireless_com_status_t wireless_status;
+	uint32_t wireless_data;
+	bool master_slave;
+
+	uint8_t wireless_master_flag = 0;
+	uint8_t wireless_slave_flag = 0;
+		wireless_flag = 0;
 	game_over_flag = 0;
 	game_over_count = 0;
 	
@@ -293,8 +304,22 @@ main(void)
 	
 	eeprom_print_info();
 	LCD_map_init();
+	master_slave = false; ///////////////////////////////////////Need to change this
+	if (master_slave){
+			spi_select(NORDIC);
+			wireless_configure_device(slaveID, masterID);
+			wireless_slave_flag = 1;
+			wireless_flag = 1;
+			Button_real_flag &= ~BUTTON_LEFT;
+		}
+		if (!master_slave){
+			spi_select(NORDIC);
+			wireless_configure_device(masterID, slaveID);
+			wireless_flag = 1;
+			wireless_master_flag = 1;
+			Button_real_flag &= ~BUTTON_RIGHT;
+		}
 	
-
 	while(1){
 		//// Gather input area
 		
@@ -344,7 +369,8 @@ main(void)
 			}
 			ALERT_TIMER4_ACC_UPDATE = false;
     }
-
+	
+		
 		/// Handle button interrupt
 		if (Button_interrupted == 1){
 			if (Button_flag == 0){
@@ -357,8 +383,34 @@ main(void)
 		}
 		
 		
-		//// react to input AREA
+		if (wireless_flag == 1 && wireless_master_flag == 1){
+			if ((Button_real_flag & BUTTON_LEFT) != 0){
+				spi_select(NORDIC);
+				wireless_status = wireless_send_32(false,true,1);
+				while(wireless_status != NRF24L01_TX_SUCCESS){
+					wireless_status = wireless_send_32(false,false,1);
+				}
+				Button_real_flag &= ~BUTTON_LEFT;
+			}
+			else if ((Button_real_flag & BUTTON_RIGHT) != 0 && wireless_flag == 1){
+				spi_select(NORDIC);
+				wireless_status = wireless_send_32(false,true,3);
+				while(wireless_status != NRF24L01_TX_SUCCESS){
+					wireless_status = wireless_send_32(false,false,3);
+				}
+				Button_real_flag &= ~BUTTON_RIGHT;
+			}
+			else if ((Button_real_flag & BUTTON_DOWN) != 0 && wireless_flag == 1){
+				spi_select(NORDIC);
+				wireless_status = wireless_send_32(false,true,2);
+				while(wireless_status != NRF24L01_TX_SUCCESS){
+				  wireless_status = wireless_send_32(false,false,2);
+				}
+				Button_real_flag &= ~BUTTON_DOWN;
+			}
+		}
 		
+		//// react to input AREA
 		if (game_over_count == 1){
 			lcd_clear_screen(LCD_COLOR_BLACK);
 			LCD_map_init();
@@ -371,88 +423,99 @@ main(void)
 				eeprom_write_info();
 				Button_real_flag &= BUTTON_SW2;
 			}
-			if ((Button_real_flag & BUTTON_DOWN) != 0){
-				for(i = 0; i < 15; i++){
-					game_bar[i].type = UNUSED;
+			if (!(wireless_flag == 1 && wireless_master_flag == 1)){
+				if ((Button_real_flag & BUTTON_DOWN) != 0){
+					for(i = 0; i < 15; i++){
+						game_bar[i].type = UNUSED;
+					}
+					game_started = 1;
+					points = 0;
+					player_x = 120;
+					player_y = PLAYER_Y_BASE;
+					current_lane = 1;
+					LCD_map_init();
+					highest_score = eeprom_print_score();
+					LCD_score_init(highest_score);
+					Button_real_flag &= ~BUTTON_DOWN;
 				}
-				game_started = 1;
-				points = 0;
-				player_x = 120;
-				player_y = PLAYER_Y_BASE;
-				current_lane = 1;
-				LCD_map_init();
-				highest_score = eeprom_print_score();
-				LCD_score_init(highest_score);
-				Button_real_flag &= ~BUTTON_DOWN;
 			}
-			if ((Button_real_flag & BUTTON_LEFT) != 0){
-				
-			}
+		
 		} 
 		
+		if (wireless_flag == 1 && wireless_slave_flag == 1){
+				spi_select(NORDIC);
+				wireless_status = wireless_get_32(false, &wireless_data);
+				if (wireless_status ==  NRF24L01_RX_SUCCESS){
+					if (wireless_data != 0){
+						wireless_lane = wireless_data -1;
+					}
+				}
+		}
+		
 		// If game has started
-		if (game_started ==1 && game_over_count == 0){
-			
-			
-			// Check jump
-			if (jump == 1){
-				if (touch_y > 300 || touch_y < 220) jump = 0;
-				if (current_lane == 0){
-					if (touch_x > 100) jump = 0; 
-				}else if (current_lane == 1) {
-					if (touch_x > 180 || touch_x < 60 ) jump = 0; 
-				}else {
-					if (touch_x < 160) jump = 0; 
+		if (game_started ==1 && game_over_count == 0 ){
+				
+				// Check jump
+				if (jump == 1){
+					if (touch_y > 300 || touch_y < 220) jump = 0;
+					if (current_lane == 0){
+						if (touch_x > 100) jump = 0; 
+					}else if (current_lane == 1) {
+						if (touch_x > 180 || touch_x < 60 ) jump = 0; 
+					}else {
+						if (touch_x < 160) jump = 0; 
+					}
+					// printf("after: %d, %d, %d\n\r", jump,touch_x,touch_y);
 				}
-				// printf("after: %d, %d, %d\n\r", jump,touch_x,touch_y);
-			}
-			if (jump == 1) {
-				if (jump_seq == 0){
-					jump_seq = 1;
+				if (jump == 1) {
+					if (jump_seq == 0){
+						jump_seq = 1;
+					}
+					jump = 0; // clearing jump flag
 				}
-				jump = 0; // clearing jump flag
-			}
-			
-			// generate bars each tick
-			if (gen_bar_flag == 1){
-				gen_bar_flag = 0; // clearing gen bar flag
-				if (points >= 100){
-					j = rand() % 3;
+				
+				if (wireless_lane != 3){
 					for (i = 0; i <= 15; i++){
-						if (i == 15) break;
-						if (game_bar[i].type == UNUSED) break;
-					}
-					if (i != 15){
-						game_bar[i].type = rand() % 4+1;
-						game_bar[i].y_pos = BAR_TOP;
-						game_bar[i].lanes = (j+1)%3;
-						game_bar[i].points_hit =0;
-					}
-					for (i = 0; i <= 15; i++){
-						if (i == 15) break;
-						if (game_bar[i].type == UNUSED) break;
-					}
-					if (i != 15){
-						game_bar[i].type = rand() % 4+1;
-						game_bar[i].y_pos = BAR_TOP;
-						game_bar[i].lanes = (j+2)%3;
-						game_bar[i].points_hit =0;
-					}
-					
-				}else if (points >= 60){
-					for (i = 0; i <= 15; i++){
-						if (i == 15) break;
-						if (game_bar[i].type == UNUSED) break;
-					}
-					if (i != 15){
-						game_bar[i].type = rand() % 4+1;
-						game_bar[i].y_pos = BAR_TOP;
-						game_bar[i].lanes = rand() % 3;
-						game_bar[i].points_hit =0;
-					}
-				} else {
-					gen_bar_count = (gen_bar_count +1) %2;
-					if (gen_bar_count == 0){
+							if (i == 15) break;
+							if (game_bar[i].type == UNUSED) break;
+						}
+						if (i != 15){
+							game_bar[i].type = rand() % 2+2;
+							game_bar[i].y_pos = BAR_TOP;
+							game_bar[i].lanes = wireless_lane;
+							game_bar[i].points_hit =0;
+						}
+						wireless_lane = 3;
+				}
+				
+				
+				// generate bars each tick
+				if (gen_bar_flag == 1){
+					gen_bar_flag = 0; // clearing gen bar flag
+					if (points >= 100){
+						j = rand() % 3;
+						for (i = 0; i <= 15; i++){
+							if (i == 15) break;
+							if (game_bar[i].type == UNUSED) break;
+						}
+						if (i != 15){
+							game_bar[i].type = rand() % 4+1;
+							game_bar[i].y_pos = BAR_TOP;
+							game_bar[i].lanes = (j+1)%3;
+							game_bar[i].points_hit =0;
+						}
+						for (i = 0; i <= 15; i++){
+							if (i == 15) break;
+							if (game_bar[i].type == UNUSED) break;
+						}
+						if (i != 15){
+							game_bar[i].type = rand() % 4+1;
+							game_bar[i].y_pos = BAR_TOP;
+							game_bar[i].lanes = (j+2)%3;
+							game_bar[i].points_hit =0;
+						}
+						
+					}else if (points >= 60){
 						for (i = 0; i <= 15; i++){
 							if (i == 15) break;
 							if (game_bar[i].type == UNUSED) break;
@@ -463,171 +526,184 @@ main(void)
 							game_bar[i].lanes = rand() % 3;
 							game_bar[i].points_hit =0;
 						}
+					} else {
+						gen_bar_count = (gen_bar_count +1) %2;
+						if (gen_bar_count == 0){
+							for (i = 0; i <= 15; i++){
+								if (i == 15) break;
+								if (game_bar[i].type == UNUSED) break;
+							}
+							if (i != 15){
+								game_bar[i].type = rand() % 4+1;
+								game_bar[i].y_pos = BAR_TOP;
+								game_bar[i].lanes = rand() % 3;
+								game_bar[i].points_hit =0;
+							}
+						}
+					
 					}
+				}
 				
+				// check change lanes
+				if ((Button_real_flag & BUTTON_LEFT) != 0){
+					if (current_lane >= 1){
+						LCD_delete_player(current_lane);
+						current_lane = current_lane - 1;
+						player_x -= 80;
+					}
+					Button_real_flag &= ~BUTTON_LEFT;
+				} else if ((Button_real_flag & BUTTON_RIGHT) != 0){
+					if (current_lane <= 1){
+						LCD_delete_player(current_lane);
+						current_lane = current_lane + 1;
+						player_x += 80;
+					}
+					Button_real_flag &= ~BUTTON_RIGHT;
 				}
-			}
-			
-			// check change lanes
-			if ((Button_real_flag & BUTTON_LEFT) != 0){
-				if (current_lane >= 1){
-					LCD_delete_player(current_lane);
-					current_lane = current_lane - 1;
-					player_x -= 80;
-				}
-				Button_real_flag &= ~BUTTON_LEFT;
-			} else if ((Button_real_flag & BUTTON_RIGHT) != 0){
-				if (current_lane <= 1){
-					LCD_delete_player(current_lane);
-					current_lane = current_lane + 1;
-					player_x += 80;
-				}
-				Button_real_flag &= ~BUTTON_RIGHT;
-			}
 
-			// undate image based on each tick. Make sure each the image update in each tick not constantly
-			if (tick){
-				
-				tick_count = (tick_count +1)%2; // movement update once per 2 tick
-				tick_count_t = (tick_count_t +1)%3; // movement update once per 3 tick
-				
-				// movement update once per 2 tick
-				if (tick_count == 0){
+				// undate image based on each tick. Make sure each the image update in each tick not constantly
+				if (tick){
 					
-					// update jump animation
-					if (jump_seq == 5){
-						jump_seq++;
-						player_y = PLAYER_Y_BASE -7;
-					}else if (jump_seq == 7){
-						jump_seq++;
-						player_y = PLAYER_Y_BASE -7;
+					tick_count = (tick_count +1)%2; // movement update once per 2 tick
+					tick_count_t = (tick_count_t +1)%3; // movement update once per 3 tick
+					
+					// movement update once per 2 tick
+					if (tick_count == 0){
+						
+						// update jump animation
+						if (jump_seq == 5){
+							jump_seq++;
+							player_y = PLAYER_Y_BASE -7;
+						}else if (jump_seq == 7){
+							jump_seq++;
+							player_y = PLAYER_Y_BASE -7;
+						}
+						
+						// update left right movement
+						if (accel_flag == 1 || accel_flag == -1){
+							player_x --;
+						}
+						
+						// update bars if score is less than 30
+						if (points <= 30){
+							for (i = 0; i < 15; i++){
+								if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
+								if (game_bar[i].y_pos >= BAR_BOTTOM){
+									LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
+									game_bar[i].type = UNUSED;
+									
+								}
+								game_bar[i].y_pos += 1;
+								}else	if (game_bar[i].type == POINTS_BAR){
+									if (game_bar[i].y_pos >= POINTS_BOTTOM){
+										LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
+										game_bar[i].type = UNUSED;
+									}
+									game_bar[i].y_pos += 2;
+								}	
+								if (game_bar[i].type != UNUSED){
+									LCD_draw_bar(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos); 
+								}
+							}
+						}		
+						
 					}
 					
-					// update left right movement
-					if (accel_flag == 1 || accel_flag == -1){
-						player_x --;
+					
+					// update every 3 ticks
+					if (tick_count_t == 0){
+						if (jump_seq == 6){
+							jump_seq++;
+							player_y = PLAYER_Y_BASE - 8;
+						}
 					}
 					
-					// update bars if score is less than 30
-					if (points <= 30){
+					// update each tick
+					// left right
+					if (accel_flag == 2 ||accel_flag == 3 ){
+							player_x = player_x +accel_flag -1;
+					}
+					if (accel_flag == -2|| accel_flag == -3){
+							player_x = player_x +accel_flag +1;
+					}
+					
+					// jump sequence animation
+					if (jump_seq == 1){
+							jump_seq++;
+							player_y = PLAYER_Y_BASE -2;
+					}else if (jump_seq == 2){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -4;
+					}else if (jump_seq == 3){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -5;
+					}else if (jump_seq == 4){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -6;
+					}else if (jump_seq == 8){
+						jump_seq++;
+						player_y = PLAYER_Y_BASE -6;
+					}else if (jump_seq == 9){
+						jump_seq ++;
+						player_y = PLAYER_Y_BASE -5;
+					}else if (jump_seq == 10){
+						jump_seq ++;
+						player_y = PLAYER_Y_BASE -4;
+					}else if (jump_seq == 11){
+						jump_seq ++;
+						player_y = PLAYER_Y_BASE -2;
+					}else if (jump_seq == 12){
+						jump_seq = 0;
+						player_y = PLAYER_Y_BASE;
+					}
+					
+					// If a thing is update  droping bars
+					if (points > 30){
 						for (i = 0; i < 15; i++){
 							if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-							if (game_bar[i].y_pos >= BAR_BOTTOM){
-								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
-								game_bar[i].type = UNUSED;
-								
-							}
-							game_bar[i].y_pos += 1;
+								if (game_bar[i].y_pos >= BAR_BOTTOM){
+									LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
+									game_bar[i].type = UNUSED;
+									
+								}
+								game_bar[i].y_pos += 1;
 							}else	if (game_bar[i].type == POINTS_BAR){
 								if (game_bar[i].y_pos >= POINTS_BOTTOM){
 									LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 									game_bar[i].type = UNUSED;
 								}
 								game_bar[i].y_pos += 2;
-							}	
+							}
 							if (game_bar[i].type != UNUSED){
 								LCD_draw_bar(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos); 
 							}
 						}
-					}		
+					}
+					// update score
+					LCD_update_score(points);
 					
+					// the information is fully updated, start drawing the player based on the information
+					boundary_check(current_lane);	
+					// Ready to next while loop
+					LCD_draw_player(player_x, player_y);
 				}
 				
-				
-				// update every 3 ticks
-				if (tick_count_t == 0){
-					if (jump_seq == 6){
-						jump_seq++;
-						player_y = PLAYER_Y_BASE - 8;
-					}
-				}
-				
-				// update each tick
-				// left right
-				if (accel_flag == 2 ||accel_flag == 3 ){
-						player_x = player_x +accel_flag -1;
-				}
-				if (accel_flag == -2|| accel_flag == -3){
-						player_x = player_x +accel_flag +1;
-				}
-				
-				// jump sequence animation
-				if (jump_seq == 1){
-						jump_seq++;
-						player_y = PLAYER_Y_BASE -2;
-				}else if (jump_seq == 2){
-					jump_seq++;
-					player_y = PLAYER_Y_BASE -4;
-				}else if (jump_seq == 3){
-					jump_seq++;
-					player_y = PLAYER_Y_BASE -5;
-				}else if (jump_seq == 4){
-					jump_seq++;
-					player_y = PLAYER_Y_BASE -6;
-				}else if (jump_seq == 8){
-					jump_seq++;
-					player_y = PLAYER_Y_BASE -6;
-				}else if (jump_seq == 9){
-					jump_seq ++;
-					player_y = PLAYER_Y_BASE -5;
-				}else if (jump_seq == 10){
-					jump_seq ++;
-					player_y = PLAYER_Y_BASE -4;
-				}else if (jump_seq == 11){
-					jump_seq ++;
-					player_y = PLAYER_Y_BASE -2;
-				}else if (jump_seq == 12){
-					jump_seq = 0;
-					player_y = PLAYER_Y_BASE;
-				}
-				
-				// If a thing is update  droping bars
-				if (points > 30){
-					for (i = 0; i < 15; i++){
-						if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-							if (game_bar[i].y_pos >= BAR_BOTTOM){
-								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
-								game_bar[i].type = UNUSED;
-								
+				// detele collision between player and bars
+				for (i = 0; i < 15; i++){
+					if (check_collision(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos,player_x,player_y)){
+						if (game_bar[i].type == POINTS_BAR ){
+							if ( game_bar[i].points_hit == 0){
+								points +=10;
+								game_bar[i].points_hit = 1;
 							}
-							game_bar[i].y_pos += 1;
-						}else	if (game_bar[i].type == POINTS_BAR){
-							if (game_bar[i].y_pos >= POINTS_BOTTOM){
-								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
-								game_bar[i].type = UNUSED;
-							}
-							game_bar[i].y_pos += 2;
-						}
-						if (game_bar[i].type != UNUSED){
-							LCD_draw_bar(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos); 
-						}
-					}
-				}
-				// update score
-				LCD_update_score(points);
-				
-				// the information is fully updated, start drawing the player based on the information
-				boundary_check(current_lane);	
-				// Ready to next while loop
-				LCD_draw_player(player_x, player_y);
-			}
-			
-			// detele collision between player and bars
-			for (i = 0; i < 15; i++){
-				if (check_collision(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos,player_x,player_y)){
-					if (game_bar[i].type == POINTS_BAR ){
-						if ( game_bar[i].points_hit == 0){
-							points +=10;
-							game_bar[i].points_hit = 1;
-						}
-					}else {
-						game_over_flag = 1;
+						}else {
+							game_over_flag = 1;
 
-						break;
+							break;
+						}
 					}
 				}
-			}
-			
+				
 		}
 		
 		// if it failed the collision detection and game has end
