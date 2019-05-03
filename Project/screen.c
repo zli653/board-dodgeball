@@ -233,3 +233,24 @@ bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t playe
 		return false;	
 			
 }
+
+void LCD_clear_bar(uint8_t lane, bar_type types){
+		uint16_t x_pos, y_pos;
+			x_pos = 38 + lane*80;
+			if(lane == 2){
+				x_pos += 2;
+			}
+			if (types == POINTS_BAR){
+				y_pos = POINTS_BOTTOM;
+			} else {
+				y_pos = BAR_BOTTOM;
+			}
+			lcd_draw_block( 
+									x_pos,                 // X Pos
+                  long_BarWidthPixels+9,   // Image Horizontal Width
+                  y_pos,                 // Y Pos
+                  long_BarHeightPixels,  // Image Vertical Height
+                  LCD_COLOR_YELLOW     // Background Color
+                );
+}
+

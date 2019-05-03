@@ -32,7 +32,7 @@ bool io_expander_init(void){
 
 	gpio_config_digital_enable(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
 	gpio_config_enable_input(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
-	gpio_config_enable_pullup(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
+	gpio_config_enable_pulldown(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
 	
 	gpio_config_falling_edge_irq(GPIOF_BASE,IO_EXPANDER_IRQ_PIN_NUM);
 	
@@ -100,6 +100,6 @@ uint8_t read_interrupt(void){
 void light_blink(void){
 	static int value;
 	value = (value + 1) % 8;
-	light_control(1 << value);
+	light_control(1 << (7-value));
 
 }

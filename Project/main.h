@@ -57,13 +57,16 @@
 #define PLAYER_Y_BASE 242 
 #define BAR_TOP 11
 #define	BAR_BUTTON 260
-#define POINTS_BUTTON 202
+#define POINTS_BUTTON 203
 
 
-typedef struct {
-	uint8_t lanes;
-	uint8_t type;
-	uint16_t y_pos;
-}bars;
 
+
+typedef enum 
+{
+  NOT_TOUCHED,
+	NOT_TOUCHED_FIRST,
+	IN_TOUCH,
+	TOUCHED_FIRST,
+} TOUCH_STATES;
 #endif

@@ -26,6 +26,17 @@ typedef enum {
 	POINTS_BAR
 } bar_type;
 
+typedef struct {
+	uint8_t lanes;
+	bar_type type;
+	uint16_t y_pos;
+	uint8_t points_hit;
+}bars;
+
+#define BAR_TOP 11
+#define	BAR_BOTTOM 260
+#define POINTS_BOTTOM 203
+
 void LCD_map_init(void);
 void LCD_draw_player(uint16_t x_pos, uint16_t y_pos);
 void LCD_update_score(uint16_t score);
@@ -33,4 +44,5 @@ void LCD_score_init(uint16_t highest);
 void LCD_draw_bar(bar_type type, uint8_t lane, uint16_t y_pos);
 void LCD_delete_player(uint8_t lane);
 bool check_collision(bar_type type, uint8_t lane, uint16_t y_pos, uint16_t player_x, uint16_t player_y);
+void LCD_clear_bar(uint8_t lane, bar_type types);
 #endif

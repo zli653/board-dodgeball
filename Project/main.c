@@ -27,10 +27,8 @@ volatile bool ALERT_TIMER1_LED_UPDATE;
 volatile bool ALERT_TIMER4_ACC_UPDATE;
 
 volatile uint8_t Button_interrupted;
-volatile int Button_value;
-int Button_old;
-volatile int Button_flag;
-int Button_real_flag;
+volatile uint8_t Button_value;
+volatile uint8_t Button_flag;
 
 uint8_t game_started;
 
@@ -40,7 +38,6 @@ uint8_t current_lane;
 
 
 uint16_t touch_x, touch_y;
-int count;
 //*****************************************************************************
 //*****************************************************************************
 void DisableInterrupts(void)
@@ -57,6 +54,8 @@ void EnableInterrupts(void)
 		CPSIE  I
 	}
 }
+
+
 void boundary_check(uint8_t lane) {
 		if (lane == 0){
 			if (player_x < 18) {
@@ -83,37 +82,11 @@ void boundary_check(uint8_t lane) {
 			}	
 		}
 		// 81
-	
 }
 
-void LCD_clear_bar(uint8_t lane, bar_type types){
-		uint8_t width, height;
-		uint16_t x_pos, y_pos;
-			x_pos = 38 + lane*80;
-			if(lane == 2){
-				x_pos += 2;
-			}
-			if (types == POINTS_BAR){
-				y_pos = POINTS_BUTTON;
-			} else {
-				y_pos = BAR_BUTTON;
-			}
-			lcd_draw_block( 
-									x_pos,                 // X Pos
-                  long_BarWidthPixels+9,   // Image Horizontal Width
-                  y_pos,                 // Y Pos
-                  long_BarHeightPixels,  // Image Vertical Height
-                  LCD_COLOR_YELLOW     // Background Color
-                );
-}
 
-typedef enum 
-{
-  NOT_TOUCHED,
-	NOT_TOUCHED_FIRST,
-	IN_TOUCH,
-	TOUCHED_FIRST,
-} TOUCH_STATES;
+
+
 
 static TOUCH_STATES state = NOT_TOUCHED;
  
@@ -134,7 +107,6 @@ bool touch_fsm_sw(uint8_t current_lane)
 			if(touch_event > 0) {state = IN_TOUCH; 
 				touch_x = ft6x06_read_x();
 				touch_y = ft6x06_read_y();
-					// printf("Jump times: %d,%d\n\r", touch_x, touch_y);
 				return true;
 			}
 			else { state = NOT_TOUCHED; }
@@ -156,7 +128,7 @@ bool touch_fsm_sw(uint8_t current_lane)
 		{
 			while(1){};
 		}
-		return false;
+		// return false;
 	}
 }
 
@@ -178,21 +150,15 @@ void TIMER4A_Handler(void)
 	gp_timer->ICR |= TIMER_ICR_TATOCINT;
 	
 	//ALERT_TIMER4_ACC_UPDATE = true;
-	if (count == 0)
-	{
-			ALERT_TIMER4_ACC_UPDATE = true;
-			count = 0;
-	}
-	else
-	{
-		count++;
-	}
+	ALERT_TIMER4_ACC_UPDATE = true;
+
 }	
 
 bool init_gpio(){
 	if(gpio_enable_port(GPIOA_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOB_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOC_BASE) == false)   return false;
+	if(gpio_enable_port(GPIOD_BASE) == false)   return false;
 	if(gpio_enable_port(GPIOF_BASE) == false)   return false;
 	return true;
 }
@@ -256,11 +222,10 @@ bool init_hardware(void)
 	Button_interrupted = 0;
 	Button_value = 0;
 	Button_flag = 0x0;
-	Button_old = 0x0f;
-	Button_real_flag = 0x00;
+
 	game_started = 0;
 	current_lane  = 1;
-	// at the end of enable timer
+
 	player_x = 120;
 	player_y = PLAYER_Y_BASE;
   
@@ -282,41 +247,67 @@ int
 main(void)
 { 
 	bars *game_bar;
-	bool jump;
-	int jump_count = 0;
-	int8_t accel_flag;
-	uint32_t i,j;
-	uint8_t tick_count,tick_count_t, jump_seq,num_bars_exist,gen_bar_flag,gen_bar_count,game_over_flag;
-	bool tick;
-	int16_t accel_x, highest_score,points;
-
+	uint8_t gen_bar_flag,gen_bar_count; //in game flag 
 	
-	init_hardware();
-	eeprom_print_info();
-	LCD_map_init();
+	bool jump;				//in game flag 
+	uint8_t jump_seq;
+	
+	int8_t accel_flag; //in game flag 
+	int16_t accel_x;
+	
+	uint32_t i,j;
+	uint8_t tick_count,tick_count_t;
+	bool tick;	//in game flag 
+	
+	int16_t highest_score, points;
+	
+	uint8_t Button_old, Button_real_flag;
+	
+	uint8_t game_over_flag;
+	uint8_t game_over_count;
+	
 	game_over_flag = 0;
-	num_bars_exist = 0;
+	game_over_count = 0;
+	
 	gen_bar_flag = 0;
-	jump = 0;	
-	jump_seq = 0;
-	tick = false;
 	gen_bar_count = 0;
-	//LCD_draw_player(222, player_y);
-	// LCD_draw_bar(LONG_BAR, 1, 202);
-	eeprom_write_score(0);
 	game_bar = malloc(sizeof(bars)*15);
 	for(i = 0; i < 15; i++){
 		game_bar[i].type = UNUSED;
 	}
+	
+	jump = 0;	
+	jump_seq = 0;
+	
+	tick = false;
+	
+	Button_old = 0x0f;
+	Button_real_flag = 0x00;
+	// eeprom_write_score(0);
+
+	if (!init_hardware()){
+		while(1){};
+	}
+	
+	eeprom_print_info();
+	LCD_map_init();
+	
+
 	while(1){
+		//// Gather input area
 		
+		/// Timer
 		// 1s timer
 		if(ALERT_TIMER1_LED_UPDATE) {
 			light_blink();
 			if (game_started){
 				points++;
-				gen_bar_flag = 1;;
+				gen_bar_flag = 1;
 			}
+			if (game_over_count >0){
+				game_over_count --;
+			}
+			read_button();
 			ALERT_TIMER1_LED_UPDATE = false;
     }
 		
@@ -326,7 +317,6 @@ main(void)
 			if (game_started == 1){
 				accel_x = accel_read_x();	
 				jump = touch_fsm_sw(current_lane);
-				// printf("ACCEL X: %d\n",accel_x);
 				if (accel_x > 8000) {
 					accel_flag = -3;
 				}	
@@ -347,12 +337,12 @@ main(void)
 				} else {
 					accel_flag = 0;
 				}
+				tick = true;
 			}
-			tick = true;
 			ALERT_TIMER4_ACC_UPDATE = false;
     }
 
-		// Handle button interrupt
+		/// Handle button interrupt
 		if (Button_interrupted == 1){
 			if (Button_flag == 0){
 				Button_real_flag |= 0x10;
@@ -364,18 +354,19 @@ main(void)
 		}
 		
 		
-		// react to input
-		// No matter game started or not
-		// if SW2 is pressed, write name
+		//// react to input AREA
 		
-		
-		
-		// If game has not started
-		if (game_started == 0){
+		if (game_over_count == 1){
+			lcd_clear_screen(LCD_COLOR_BLACK);
+			LCD_map_init();
+			game_started = 0;
+			game_over_count = 0;
+		}
+		/// If game has not started
+		if (game_started == 0 && game_over_count == 0){
 			if ((Button_real_flag & BUTTON_SW2) != 0){
 				eeprom_write_info();
 				Button_real_flag &= BUTTON_SW2;
-				
 			}
 			if ((Button_real_flag & BUTTON_DOWN) != 0){
 				for(i = 0; i < 15; i++){
@@ -394,7 +385,9 @@ main(void)
 		} 
 		
 		// If game has started
-		if (game_started ==1){
+		if (game_started ==1 && game_over_count == 0){
+			
+			
 			// Check jump
 			if (jump == 1){
 				if (touch_y > 300 || touch_y < 220) jump = 0;
@@ -407,16 +400,16 @@ main(void)
 				}
 				// printf("after: %d, %d, %d\n\r", jump,touch_x,touch_y);
 			}
-			
 			if (jump == 1) {
 				if (jump_seq == 0){
 					jump_seq = 1;
 				}
-				jump = 0;
+				jump = 0; // clearing jump flag
 			}
 			
+			// generate bars each tick
 			if (gen_bar_flag == 1){
-				gen_bar_flag = 0;
+				gen_bar_flag = 0; // clearing gen bar flag
 				if (points >= 100){
 					j = rand() % 3;
 					for (i = 0; i <= 15; i++){
@@ -427,6 +420,7 @@ main(void)
 						game_bar[i].type = rand() % 4+1;
 						game_bar[i].y_pos = BAR_TOP;
 						game_bar[i].lanes = (j+1)%3;
+						game_bar[i].points_hit =0;
 					}
 					for (i = 0; i <= 15; i++){
 						if (i == 15) break;
@@ -436,6 +430,7 @@ main(void)
 						game_bar[i].type = rand() % 4+1;
 						game_bar[i].y_pos = BAR_TOP;
 						game_bar[i].lanes = (j+2)%3;
+						game_bar[i].points_hit =0;
 					}
 					
 				}else if (points >= 60){
@@ -447,6 +442,7 @@ main(void)
 						game_bar[i].type = rand() % 4+1;
 						game_bar[i].y_pos = BAR_TOP;
 						game_bar[i].lanes = rand() % 3;
+						game_bar[i].points_hit =0;
 					}
 				} else {
 					gen_bar_count = (gen_bar_count +1) %2;
@@ -459,6 +455,7 @@ main(void)
 							game_bar[i].type = rand() % 4+1;
 							game_bar[i].y_pos = BAR_TOP;
 							game_bar[i].lanes = rand() % 3;
+							game_bar[i].points_hit =0;
 						}
 					}
 				
@@ -481,16 +478,17 @@ main(void)
 				}
 				Button_real_flag &= ~BUTTON_RIGHT;
 			}
-			
-			// update score
-			LCD_update_score(points);
-			
-			// undate image based on each tick
+
+			// undate image based on each tick. Make sure each the image update in each tick not constantly
 			if (tick){
 				
-				tick_count = (tick_count +1)%2;
-				tick_count_t = (tick_count_t +1)%3;
+				tick_count = (tick_count +1)%2; // movement update once per 2 tick
+				tick_count_t = (tick_count_t +1)%3; // movement update once per 3 tick
+				
+				// movement update once per 2 tick
 				if (tick_count == 0){
+					
+					// update jump animation
 					if (jump_seq == 5){
 						jump_seq++;
 						player_y = PLAYER_Y_BASE -7;
@@ -499,20 +497,23 @@ main(void)
 						player_y = PLAYER_Y_BASE -7;
 					}
 					
+					// update left right movement
 					if (accel_flag == 1 || accel_flag == -1){
 						player_x --;
 					}
+					
+					// update bars if score is less than 30
 					if (points <= 30){
 						for (i = 0; i < 15; i++){
 							if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-							if (game_bar[i].y_pos >= BAR_BUTTON){
+							if (game_bar[i].y_pos >= BAR_BOTTOM){
 								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 								game_bar[i].type = UNUSED;
 								
 							}
 							game_bar[i].y_pos += 1;
 							}else	if (game_bar[i].type == POINTS_BAR){
-								if (game_bar[i].y_pos >= POINTS_BUTTON){
+								if (game_bar[i].y_pos >= POINTS_BOTTOM){
 									LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 									game_bar[i].type = UNUSED;
 								}
@@ -522,12 +523,12 @@ main(void)
 								LCD_draw_bar(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos); 
 							}
 						}
-					}					
-					// if update each 2 tick
+					}		
+					
 				}
 				
 				
-				
+				// update every 3 ticks
 				if (tick_count_t == 0){
 					if (jump_seq == 6){
 						jump_seq++;
@@ -535,12 +536,16 @@ main(void)
 					}
 				}
 				
+				// update each tick
+				// left right
 				if (accel_flag == 2 ||accel_flag == 3 ){
 						player_x = player_x +accel_flag -1;
 				}
 				if (accel_flag == -2|| accel_flag == -3){
 						player_x = player_x +accel_flag +1;
 				}
+				
+				// jump sequence animation
 				if (jump_seq == 1){
 						jump_seq++;
 						player_y = PLAYER_Y_BASE -2;
@@ -570,18 +575,18 @@ main(void)
 					player_y = PLAYER_Y_BASE;
 				}
 				
-				// If a thing is update each tick
-				if (points >30){
+				// If a thing is update  droping bars
+				if (points > 30){
 					for (i = 0; i < 15; i++){
 						if (game_bar[i].type != POINTS_BAR && game_bar[i].type!= UNUSED){
-							if (game_bar[i].y_pos >= BAR_BUTTON){
+							if (game_bar[i].y_pos >= BAR_BOTTOM){
 								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 								game_bar[i].type = UNUSED;
 								
 							}
 							game_bar[i].y_pos += 1;
 						}else	if (game_bar[i].type == POINTS_BAR){
-							if (game_bar[i].y_pos >= POINTS_BUTTON){
+							if (game_bar[i].y_pos >= POINTS_BOTTOM){
 								LCD_clear_bar(game_bar[i].lanes, game_bar[i].type);
 								game_bar[i].type = UNUSED;
 							}
@@ -592,69 +597,53 @@ main(void)
 						}
 					}
 				}
+				// update score
+				LCD_update_score(points);
 				
+				// the information is fully updated, start drawing the player based on the information
+				boundary_check(current_lane);	
+				// Ready to next while loop
+				LCD_draw_player(player_x, player_y);
 			}
 			
-			
-			
-		}
-		if (game_started == 1){
-			
+			// detele collision between player and bars
 			for (i = 0; i < 15; i++){
 				if (check_collision(game_bar[i].type,game_bar[i].lanes,game_bar[i].y_pos,player_x,player_y)){
-					if (game_bar[i].type == POINTS_BAR){
-						points +=10;
+					if (game_bar[i].type == POINTS_BAR ){
+						if ( game_bar[i].points_hit == 0){
+							points +=10;
+							game_bar[i].points_hit = 1;
+						}
 					}else {
 						game_over_flag = 1;
-						game_started = 0;
+
 						break;
 					}
 				}
 			}
+			
 		}
 		
+		// if it failed the collision detection and game has end
 		if (game_over_flag == 1){
 			if (points > highest_score) {
 				eeprom_write_score(points);
 			}
 			
-			// clear and reprint game start message
-			lcd_set_pos(0,COLS - 1, 293,307);
-			for (i=293;i< 307 ;i++)
-			{
-						for(j= 0; j < COLS; j++)
-						{
-								lcd_write_data_u16(LCD_COLOR_BLACK);
-						}
-			}
-			lcd_draw_image( 
-									120,                 // X Pos
-                  start_gameWidthPixels,   // Image Horizontal Width
-                  300,                 // Y Pos
-                  start_gameHeightPixels,  // Image Vertical Height
-                  start_gameBitmaps,       // Image
-                  LCD_COLOR_WHITE,      // Foreground Color
-                  LCD_COLOR_BLACK     // Background Color
-                );
 			for(i = 0; i < 15; i++){
 				game_bar[i].type = UNUSED;
 			}
 			game_over_flag = 0;
-
+			game_over_count = 4;
 		}
-		boundary_check(current_lane);	
-		// Ready to next while loop
-		LCD_draw_player(player_x, player_y);
-		// clear all interrupt
+		
+		// clear all flags, make sure it is cleaned
 		
 		Button_real_flag = 0;
-		read_button();
-		
-				
+			
 		tick = false;
-		
-		
-		
-		
+		jump = false;
+		accel_flag = 0;
+		gen_bar_flag  = 0;
 	};
 }
