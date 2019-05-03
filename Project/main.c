@@ -229,6 +229,8 @@ bool init_hardware(void)
 	player_x = 120;
 	player_y = PLAYER_Y_BASE;
   
+	spi_select_init();
+	
 	EnableInterrupts();
   return true;
 }
@@ -315,6 +317,7 @@ main(void)
     if(ALERT_TIMER4_ACC_UPDATE) {
 			// if game has started
 			if (game_started == 1){
+				spi_select(MODULE_1);
 				accel_x = accel_read_x();	
 				jump = touch_fsm_sw(current_lane);
 				if (accel_x > 8000) {
@@ -381,6 +384,9 @@ main(void)
 				highest_score = eeprom_print_score();
 				LCD_score_init(highest_score);
 				Button_real_flag &= ~BUTTON_DOWN;
+			}
+			if ((Button_real_flag & BUTTON_LEFT) != 0){
+				
 			}
 		} 
 		

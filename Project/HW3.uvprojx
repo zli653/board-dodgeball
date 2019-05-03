@@ -403,6 +403,11 @@
           <GroupName>peripherals</GroupName>
           <Files>
             <File>
+              <FileName>ece353_nrf24l01p.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\lib\ece353_nrf24l01p.lib</FilePath>
+            </File>
+            <File>
               <FileName>serial_debug.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\peripherals\c\serial_debug.c</FilePath>

@@ -1,5 +1,6 @@
 --cpu=Cortex-M4.fp
 ".\obj\main.o"
+"..\lib\ece353_nrf24l01p.lib"
 ".\obj\serial_debug.o"
 ".\obj\accel.o"
 ".\obj\ece353_images.o"

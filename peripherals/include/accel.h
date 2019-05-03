@@ -50,7 +50,7 @@
 #define ACCEL_OUTZ_H_XL												0x2D
 
 // ADD CODE
-#define ACCEL_SPI_MODE												3
+#define ACCEL_SPI_MODE												0
 
 #define ACCEL_SPI_READ												( 1 << 7)
 #define ACCEL_SPI_WRITE_N											( 0 << 7)

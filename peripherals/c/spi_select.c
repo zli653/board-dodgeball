@@ -60,7 +60,7 @@ bool  spi_select_init(void)
     return false;
   }
   
-  spi_select(NORDIC);
+  // spi_select(NORDIC);
   return true;
 }
 
